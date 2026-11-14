@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net35</TargetFramework>
+		<LangVersion>Latest</LangVersion>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Configurations>BepInEx5;BepInEx6</Configurations>
+		<Platforms>AnyCPU</Platforms>
+		<OutputPath>..\ReadyMod\MelonLoader</OutputPath>
+	</PropertyGroup>
+	<PropertyGroup>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	</PropertyGroup>
+	<ItemDefinitionGroup>
+		  <PackageReference>
+				<PrivateAssets>all</PrivateAssets>
+		  </PackageReference>
+   </ItemDefinitionGroup>
+	<ItemGroup>
+		<PackageReference Include="AssetRipper.VersionUtilities" Version="1.2.1" />
+		<PackageReference Include="AssetsTools.NET" Version="3.0.0-preview1" />
+		<PackageReference Include="HarmonyX" Version="2.10.2" />
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Samboy063.Tomlet" Version="6.2.0" />
+		<PackageReference Include="bHapticsLib" Version="1.0.6" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'BepInEx5'">
+		<PackageReference Include="BepInEx.BaseLib" Version="5.4.21" IncludeAssets="compile" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(Configuration)' == 'BepInEx6'">
+		<PackageReference Include="BepInEx.Core" Version="6.0.0-be.572" IncludeAssets="compile" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\classdata.tpk" />
+	</ItemGroup>
+</Project>
