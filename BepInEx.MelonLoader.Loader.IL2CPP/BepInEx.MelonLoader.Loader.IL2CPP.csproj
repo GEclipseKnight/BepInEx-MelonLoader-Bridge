@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>BepInEx.MelonLoader.Loader.IL2CPP</AssemblyName>
+        <Description>MelonLoader loader for Il2Cpp games</Description>
+        <Version>3.0.0</Version>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+        <Configurations>BepInEx6</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <OutputPath>$(SolutionDir)Output\$(Configuration)\IL2CPP\</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MelonLoader\MelonLoader.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Reference Include="BepInEx.Core">
+        <HintPath>..\..\BepInEx-6-IL2CPP\BepInEx\core\BepInEx.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="BepInEx.Unity.IL2CPP">
+        <HintPath>..\..\BepInEx-6-IL2CPP\BepInEx\core\BepInEx.Unity.IL2CPP.dll</HintPath>
+      </Reference>
+      <Reference Include="Il2CppInterop.Runtime">
+        <HintPath>..\..\BepInEx-6-IL2CPP\BepInEx\core\Il2CppInterop.Runtime.dll</HintPath>
+      </Reference>
+      <Reference Include="0Harmony">
+        <HintPath>..\..\BepInEx-6-IL2CPP\BepInEx\core\0Harmony.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+</Project>
