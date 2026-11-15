@@ -24,13 +24,13 @@
       <HintPath>..\..\BepInEx-6-IL2CPP\BepInEx\core\Il2CppInterop.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Il2Cppmscorlib">
-      <HintPath>D:\annex\steam\steamapps\common\Among Us\BepInEx\interop\Il2Cppmscorlib.dll</HintPath>
+      <HintPath>..\..\BepInEx-6-IL2CPP\interop\Il2Cppmscorlib.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>D:\annex\steam\steamapps\common\Among Us\BepInEx\interop\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\BepInEx-6-IL2CPP\interop\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>D:\annex\steam\steamapps\common\Among Us\BepInEx\interop\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\..\BepInEx-6-IL2CPP\interop\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
