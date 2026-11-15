@@ -3,47 +3,16 @@ using System;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 {
-	/// <summary>
-	/// Strategies for deflater
-	/// </summary>
 	public enum DeflateStrategy
 	{
-		/// <summary>
-		/// The default strategy
-		/// </summary>
 		Default = 0,
 
-		/// <summary>
-		/// This strategy will only allow longer string repetitions.  It is
-		/// useful for random data with a small character set.
-		/// </summary>
 		Filtered = 1,
 
-		/// <summary>
-		/// This strategy will not look for string repetitions at all.  It
-		/// only encodes with Huffman trees (which means, that more common
-		/// characters get a smaller encoding.
-		/// </summary>
 		HuffmanOnly = 2
 	}
 
-	// DEFLATE ALGORITHM:
-	//
-	// The uncompressed stream is inserted into the window array.  When
-	// the window array is full the first half is thrown away and the
-	// second half is copied to the beginning.
-	//
-	// The head array is a hash table.  Three characters build a hash value
-	// and they the value points to the corresponding index in window of
-	// the last string with this hash.  The prev array implements a
-	// linked list of matches with the same hash: prev[index & WMASK] points
-	// to the previous index with the same hash.
-	//
 
-	/// <summary>
-	/// Low level compression engine for deflate algorithm which uses a 32K sliding window
-	/// with secondary compression from Huffman/Shannon-Fano codes.
-	/// </summary>
 	public class DeflaterEngine
 	{
 		#region Constants
@@ -54,13 +23,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#region Constructors
 
-		/// <summary>
-		/// Construct instance with pending buffer
-		/// Adler calculation will be performed
-		/// </summary>
-		/// <param name="pending">
-		/// Pending buffer to use
-		/// </param>
 		public DeflaterEngine(DeflaterPending pending)
 			: this (pending, false)
 		{
@@ -68,15 +30,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 
 
-		/// <summary>
-		/// Construct instance with pending buffer
-		/// </summary>
-		/// <param name="pending">
-		/// Pending buffer to use
-		/// </param>
-		/// <param name="noAdlerCalculation">
-		/// If no adler calculation should be performed
-		/// </param>
 		public DeflaterEngine(DeflaterPending pending, bool noAdlerCalculation)
 		{
 			this.pending = pending;
@@ -88,19 +41,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			head = new short[DeflaterConstants.HASH_SIZE];
 			prev = new short[DeflaterConstants.WSIZE];
 
-			// We start at index 1, to avoid an implementation deficiency, that
-			// we cannot build a repeat pattern at index 0.
 			blockStart = strstart = 1;
 		}
 
 		#endregion Constructors
 
-		/// <summary>
-		/// Deflate drives actual compression of data
-		/// </summary>
-		/// <param name="flush">True to flush input buffers</param>
-		/// <param name="finish">Finish deflation with the current input.</param>
-		/// <returns>Returns true if progress has been made.</returns>
 		public bool Deflate(bool flush, bool finish)
 		{
 			bool progress;
@@ -136,13 +81,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return progress;
 		}
 
-		/// <summary>
-		/// Sets input data to be deflated.  Should only be called when <code>NeedsInput()</code>
-		/// returns true
-		/// </summary>
-		/// <param name="buffer">The buffer containing input data.</param>
-		/// <param name="offset">The offset of the first byte of data.</param>
-		/// <param name="count">The number of bytes of data to use as input.</param>
 		public void SetInput(byte[] buffer, int offset, int count)
 		{
 			if (buffer == null)
@@ -180,21 +118,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			inputEnd = end;
 		}
 
-		/// <summary>
-		/// Determines if more <see cref="SetInput">input</see> is needed.
-		/// </summary>
-		/// <returns>Return true if input is needed via <see cref="SetInput">SetInput</see></returns>
 		public bool NeedsInput()
 		{
 			return (inputEnd == inputOff);
 		}
 
-		/// <summary>
-		/// Set compression dictionary
-		/// </summary>
-		/// <param name="buffer">The buffer containing the dictionary data</param>
-		/// <param name="offset">The offset in the buffer for the first byte of data</param>
-		/// <param name="length">The length of the dictionary data.</param>
 		public void SetDictionary(byte[] buffer, int offset, int length)
 		{
 #if DebugDeflation
@@ -228,9 +156,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			blockStart = strstart;
 		}
 
-		/// <summary>
-		/// Reset internal state
-		/// </summary>
 		public void Reset()
 		{
 			huffman.Reset();
@@ -252,17 +177,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Reset Adler checksum
-		/// </summary>
 		public void ResetAdler()
 		{
 			adler?.Reset();
 		}
 
-		/// <summary>
-		/// Get current value of Adler checksum
-		/// </summary>
 		public int Adler
 		{
 			get
@@ -271,9 +190,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Total data processed
-		/// </summary>
 		public long TotalIn
 		{
 			get
@@ -282,9 +198,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Get/set the <see cref="DeflateStrategy">deflate strategy</see>
-		/// </summary>
 		public DeflateStrategy Strategy
 		{
 			get
@@ -297,10 +210,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Set the deflate level (0-9)
-		/// </summary>
-		/// <param name="level">The value to set the level to.</param>
 		public void SetLevel(int level)
 		{
 			if ((level < 0) || (level > 9))
@@ -360,9 +269,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Fill the window
-		/// </summary>
 		public void FillWindow()
 		{
 			/* If the window is almost full and there is insufficient lookahead,
@@ -409,11 +315,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			ins_h = (window[strstart] << DeflaterConstants.HASH_SHIFT) ^ window[strstart + 1];
 		}
 
-		/// <summary>
-		/// Inserts the current string in the head hash and returns the previous
-		/// value for this hash.
-		/// </summary>
-		/// <returns>The previous hash value</returns>
 		private int InsertString()
 		{
 			short match;
@@ -445,15 +346,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			strstart -= DeflaterConstants.WSIZE;
 			blockStart -= DeflaterConstants.WSIZE;
 
-			// Slide the hash table (could be avoided with 32 bit values
-			// at the expense of memory usage).
 			for (int i = 0; i < DeflaterConstants.HASH_SIZE; ++i)
 			{
 				int m = head[i] & 0xffff;
 				head[i] = (short)(m >= DeflaterConstants.WSIZE ? (m - DeflaterConstants.WSIZE) : 0);
 			}
 
-			// Slide the prev table.
 			for (int i = 0; i < DeflaterConstants.WSIZE; i++)
 			{
 				int m = prev[i] & 0xffff;
@@ -461,21 +359,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Find the best (longest) string in the window matching the
-		/// string starting at strstart.
-		///
-		/// Preconditions:
-		/// <code>
-		/// strstart + DeflaterConstants.MAX_MATCH &lt;= window.length.</code>
-		/// </summary>
-		/// <param name="curMatch"></param>
-		/// <returns>True if a match greater than the minimum length is found</returns>
 		private bool FindLongestMatch(int curMatch)
 		{
 			int match;
 			int scan = strstart;
-			// scanMax is the highest position that we can look at
 			int scanMax = scan + Math.Min(DeflaterConstants.MAX_MATCH, lookahead) - 1;
 			int limit = Math.Max(scan - DeflaterConstants.MAX_DIST, 0);
 
@@ -491,7 +378,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			byte scan_end1 = window[scan + matchLen - 1];
 			byte scan_end = window[scan + matchLen];
 
-			// Do not waste too much time if we already have a good match:
 			if (matchLen >= this.goodLength) chainLength >>= 2;
 
 			do
@@ -507,10 +393,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					continue;
 				}
 
-				// scan is set to strstart+1 and the comparison passed, so
-				// scanMax - scan is the maximum number of bytes we can compare.
-				// below we compare 8 bytes at a time, so first we compare
-				// (scanMax - scan) % 8 bytes, so the remainder is a multiple of 8
 
 				switch ((scanMax - scan) % 8)
 				{
@@ -659,7 +541,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			{
 				if (lookahead == 0)
 				{
-					// We are flushing everything
 					huffman.FlushBlock(window, blockStart, strstart - blockStart, finish);
 					blockStart = strstart;
 					return false;
@@ -681,7 +562,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					strstart - hashHead <= DeflaterConstants.MAX_DIST &&
 					FindLongestMatch(hashHead))
 				{
-					// longestMatch sets matchStart and matchLen
 #if DebugDeflation
 					if (DeflaterConstants.DEBUGGING)
 					{
@@ -721,7 +601,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				}
 				else
 				{
-					// No match found
 					huffman.TallyLit(window[strstart] & 0xff);
 					++strstart;
 					--lookahead;
@@ -755,7 +634,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					}
 					prevAvailable = false;
 
-					// We are flushing everything
 #if DebugDeflation
 					if (DeflaterConstants.DEBUGGING && !flush)
 					{
@@ -788,9 +666,7 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 						strstart - hashHead <= DeflaterConstants.MAX_DIST &&
 						FindLongestMatch(hashHead))
 					{
-						// longestMatch sets matchStart and matchLen
 
-						// Discard match if too small and too far away
 						if (matchLen <= 5 && (strategy == DeflateStrategy.Filtered || (matchLen == DeflaterConstants.MIN_MATCH && strstart - matchStart > TooFar)))
 						{
 							matchLen = DeflaterConstants.MIN_MATCH - 1;
@@ -798,7 +674,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					}
 				}
 
-				// previous match was better
 				if ((prevLen >= DeflaterConstants.MIN_MATCH) && (matchLen <= prevLen))
 				{
 #if DebugDeflation
@@ -856,89 +731,42 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#region Instance Fields
 
-		// Hash index of string to be inserted
 		private int ins_h;
 
-		/// <summary>
-		/// Hashtable, hashing three characters to an index for window, so
-		/// that window[index]..window[index+2] have this hash code.
-		/// Note that the array should really be unsigned short, so you need
-		/// to and the values with 0xffff.
-		/// </summary>
 		private short[] head;
 
-		/// <summary>
-		/// <code>prev[index &amp; WMASK]</code> points to the previous index that has the
-		/// same hash code as the string starting at index.  This way
-		/// entries with the same hash code are in a linked list.
-		/// Note that the array should really be unsigned short, so you need
-		/// to and the values with 0xffff.
-		/// </summary>
 		private short[] prev;
 
 		private int matchStart;
 
-		// Length of best match
 		private int matchLen;
 
-		// Set if previous match exists
 		private bool prevAvailable;
 
 		private int blockStart;
 
-		/// <summary>
-		/// Points to the current character in the window.
-		/// </summary>
 		private int strstart;
 
-		/// <summary>
-		/// lookahead is the number of characters starting at strstart in
-		/// window that are valid.
-		/// So window[strstart] until window[strstart+lookahead-1] are valid
-		/// characters.
-		/// </summary>
 		private int lookahead;
 
-		/// <summary>
-		/// This array contains the part of the uncompressed stream that
-		/// is of relevance.  The current character is indexed by strstart.
-		/// </summary>
 		private byte[] window;
 
 		private DeflateStrategy strategy;
 		private int max_chain, max_lazy, niceLength, goodLength;
 
-		/// <summary>
-		/// The current compression function.
-		/// </summary>
 		private int compressionFunction;
 
-		/// <summary>
-		/// The input data for compression.
-		/// </summary>
 		private byte[] inputBuf;
 
-		/// <summary>
-		/// The total bytes of input read.
-		/// </summary>
 		private long totalIn;
 
-		/// <summary>
-		/// The offset into inputBuf, where input data starts.
-		/// </summary>
 		private int inputOff;
 
-		/// <summary>
-		/// The end offset of the input data.
-		/// </summary>
 		private int inputEnd;
 
 		private DeflaterPending pending;
 		private DeflaterHuffman huffman;
 
-		/// <summary>
-		/// The adler checksum
-		/// </summary>
 		private Adler32 adler;
 
 		#endregion Instance Fields

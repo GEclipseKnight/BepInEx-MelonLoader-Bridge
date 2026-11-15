@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -15,10 +15,7 @@ namespace MelonLoader.InternalUtils
         private static Type MonoBehaviourType = null;
         private static Type ScriptableObjectType = null;
 
-        // Key = name of magic method. Value = optional argument types
-        // See: https://docs.unity3d.com/ScriptReference/MonoBehaviour.html
         private static Dictionary<string, Type[]> MonoBehaviourMethods = null;
-        // See: https://docs.unity3d.com/ScriptReference/ScriptableObject.html
         private static Dictionary<string, Type[]> ScriptableObjectMethods = null;
 
         static UnityMagicMethods()
@@ -54,8 +51,6 @@ namespace MelonLoader.InternalUtils
                 ["OnDestroy"] = new Type[0],
                 ["OnDisable"] = new Type[0],
                 ["OnDisconnectedFromServer"] = new[] { unityType("UnityEngine.NetworkDisconnection") },
-                // "OnDrawGizmos" is editor-only
-                // "OnDrawGizmosSelected" is editor-only
                 ["OnEnable"] = new Type[0],
                 ["OnFailedToConnect"] = new[] { unityType("UnityEngine.NetworkConnectionError") },
                 ["OnFailedToConnectToMasterServer"] = new[] { unityType("UnityEngine.NetworkConnectionError") },
@@ -92,9 +87,7 @@ namespace MelonLoader.InternalUtils
                 ["OnTriggerExit2D"] = new[] { unityType("UnityEngine.Collider2D") },
                 ["OnTriggerStay"] = new[] { unityType("UnityEngine.Collider") },
                 ["OnTriggerStay2D"] = new[] { unityType("UnityEngine.Collider2D") },
-                // "OnValidate" is editor-only
                 ["OnWillRenderObject"] = new Type[0],
-                // "Reset" is editor-only
                 ["Start"] = new Type[0],
                 ["Update"] = new Type[0],
             };
@@ -132,8 +125,6 @@ namespace MelonLoader.InternalUtils
 
             ParameterInfo[] parameters = method.GetParameters();
 
-            // No-args method with the correct name and correct owner -> magic method
-            // If there are arguments, all of their types have to match the magic method template. This may be too restrictive.
 
             if (parameters.Length == 0)
                 return true;

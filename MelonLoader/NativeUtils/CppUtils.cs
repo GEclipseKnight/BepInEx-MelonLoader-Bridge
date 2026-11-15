@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -6,7 +6,6 @@ namespace MelonLoader.NativeUtils
 {
     public static class CppUtils
     {
-        // Credits: https://stackoverflow.com/a/9995303
         private static int GetHexVal(char hex)
         {
             int val = (int)hex;

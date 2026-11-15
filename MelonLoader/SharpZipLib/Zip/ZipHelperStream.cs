@@ -3,32 +3,20 @@ using System.IO;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 {
-	/// <summary>
-	/// Holds data pertinent to a data descriptor.
-	/// </summary>
 	public class DescriptorData
 	{
-		/// <summary>
-		/// Get /set the compressed size of data.
-		/// </summary>
 		public long CompressedSize
 		{
 			get { return compressedSize; }
 			set { compressedSize = value; }
 		}
 
-		/// <summary>
-		/// Get / set the uncompressed size of data
-		/// </summary>
 		public long Size
 		{
 			get { return size; }
 			set { size = value; }
 		}
 
-		/// <summary>
-		/// Get /set the crc value.
-		/// </summary>
 		public long Crc
 		{
 			get { return crc; }
@@ -66,27 +54,16 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 		#endregion Instance Fields
 	}
 
-	/// <summary>
-	/// This class assists with writing/reading from Zip files.
-	/// </summary>
 	internal class ZipHelperStream : Stream
 	{
 		#region Constructors
 
-		/// <summary>
-		/// Initialise an instance of this class.
-		/// </summary>
-		/// <param name="name">The name of the file to open.</param>
 		public ZipHelperStream(string name)
 		{
 			stream_ = new FileStream(name, FileMode.Open, FileAccess.ReadWrite);
 			isOwner_ = true;
 		}
 
-		/// <summary>
-		/// Initialise a new instance of <see cref="ZipHelperStream"/>.
-		/// </summary>
-		/// <param name="stream">The stream to use.</param>
 		public ZipHelperStream(Stream stream)
 		{
 			stream_ = stream;
@@ -94,10 +71,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#endregion Constructors
 
-		/// <summary>
-		/// Get / set a value indicating whether the underlying stream is owned or not.
-		/// </summary>
-		/// <remarks>If the stream is owned it is closed when this instance is closed.</remarks>
 		public bool IsStreamOwner
 		{
 			get { return isOwner_; }
@@ -162,12 +135,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			stream_.Write(buffer, offset, count);
 		}
 
-		/// <summary>
-		/// Close the stream.
-		/// </summary>
-		/// <remarks>
-		/// The underlying stream is closed only if <see cref="IsStreamOwner"/> is true.
-		/// </remarks>
 		protected override void Dispose(bool disposing)
 		{
 			Stream toClose = stream_;
@@ -181,8 +148,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#endregion Base Stream Methods
 
-		// Write the local file header
-		// TODO: ZipHelperStream.WriteLocalHeader is not yet used and needs checking for ZipFile and ZipOuptutStream usage
 		private void WriteLocalHeader(ZipEntry entry, EntryPatchData patchData)
 		{
 			CompressionMethod method = entry.CompressionMethod;
@@ -223,7 +188,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 					patchData.SizePatchOffset = stream_.Position;
 				}
 
-				// For local header both sizes appear in Zip64 Extended Information
 				if (entry.LocalHeaderRequiresZip64 && patchEntryHeader)
 				{
 					WriteLEInt(-1);
@@ -296,14 +260,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			}
 		}
 
-		/// <summary>
-		/// Locates a block with the desired <paramref name="signature"/>.
-		/// </summary>
-		/// <param name="signature">The signature to find.</param>
-		/// <param name="endLocation">Location, marking the end of block.</param>
-		/// <param name="minimumBlockSize">Minimum size of the block.</param>
-		/// <param name="maximumVariableData">The maximum variable data.</param>
-		/// <returns>Returns the offset of the first byte after the signature; -1 if not found</returns>
 		public long LocateBlockWithSignature(int signature, long endLocation, int minimumBlockSize, int maximumVariableData)
 		{
 			long pos = endLocation - minimumBlockSize;
@@ -314,7 +270,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 			long giveUpMarker = Math.Max(pos - maximumVariableData, 0);
 
-			// TODO: This loop could be optimised for speed.
 			do
 			{
 				if (pos < giveUpMarker)
@@ -327,12 +282,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return Position;
 		}
 
-		/// <summary>
-		/// Write Zip64 end of central directory records (File header and locator).
-		/// </summary>
-		/// <param name="noOfEntries">The number of entries in the central directory.</param>
-		/// <param name="sizeEntries">The size of entries in the central directory.</param>
-		/// <param name="centralDirOffset">The offset of the central directory.</param>
 		public void WriteZip64EndOfCentralDirectory(long noOfEntries, long sizeEntries, long centralDirOffset)
 		{
 			long centralSignatureOffset = centralDirOffset + sizeEntries;
@@ -346,28 +295,16 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			WriteLELong(noOfEntries);       // Total No of entries in central directory
 			WriteLELong(sizeEntries);       // Size of the central directory
 			WriteLELong(centralDirOffset);  // offset of start of central directory
-											// zip64 extensible data sector not catered for here (variable size)
 
-			// Write the Zip64 end of central directory locator
 			WriteLEInt(ZipConstants.Zip64CentralDirLocatorSignature);
 
-			// no of the disk with the start of the zip64 end of central directory
 			WriteLEInt(0);
 
-			// relative offset of the zip64 end of central directory record
 			WriteLELong(centralSignatureOffset);
 
-			// total number of disks
 			WriteLEInt(1);
 		}
 
-		/// <summary>
-		/// Write the required records to end the central directory.
-		/// </summary>
-		/// <param name="noOfEntries">The number of entries in the directory.</param>
-		/// <param name="sizeEntries">The size of the entries in the directory.</param>
-		/// <param name="startOfCentralDirectory">The start of the central directory.</param>
-		/// <param name="comment">The archive comment.  (This can be null).</param>
 		public void WriteEndOfCentralDirectory(long noOfEntries, long sizeEntries,
 			long startOfCentralDirectory, byte[] comment)
 		{
@@ -380,11 +317,9 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 			WriteLEInt(ZipConstants.EndOfCentralDirectorySignature);
 
-			// TODO: ZipFile Multi disk handling not done
 			WriteLEShort(0);                    // number of this disk
 			WriteLEShort(0);                    // no of disk with start of central dir
 
-			// Number of entries
 			if (noOfEntries >= 0xffff)
 			{
 				WriteLEUshort(0xffff);  // Zip64 marker
@@ -396,7 +331,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 				WriteLEShort((short)noOfEntries);          // total entries in central directory
 			}
 
-			// Size of the central directory
 			if (sizeEntries >= 0xffffffff)
 			{
 				WriteLEUint(0xffffffff);    // Zip64 marker
@@ -406,7 +340,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 				WriteLEInt((int)sizeEntries);
 			}
 
-			// offset of start of central directory
 			if (startOfCentralDirectory >= 0xffffffff)
 			{
 				WriteLEUint(0xffffffff);    // Zip64 marker
@@ -433,16 +366,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#region LE value reading/writing
 
-		/// <summary>
-		/// Read an unsigned short in little endian byte order.
-		/// </summary>
-		/// <returns>Returns the value read.</returns>
-		/// <exception cref="IOException">
-		/// An i/o error occurs.
-		/// </exception>
-		/// <exception cref="EndOfStreamException">
-		/// The file ends prematurely
-		/// </exception>
 		public int ReadLEShort()
 		{
 			int byteValue1 = stream_.ReadByte();
@@ -461,84 +384,46 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return byteValue1 | (byteValue2 << 8);
 		}
 
-		/// <summary>
-		/// Read an int in little endian byte order.
-		/// </summary>
-		/// <returns>Returns the value read.</returns>
-		/// <exception cref="IOException">
-		/// An i/o error occurs.
-		/// </exception>
-		/// <exception cref="System.IO.EndOfStreamException">
-		/// The file ends prematurely
-		/// </exception>
 		public int ReadLEInt()
 		{
 			return ReadLEShort() | (ReadLEShort() << 16);
 		}
 
-		/// <summary>
-		/// Read a long in little endian byte order.
-		/// </summary>
-		/// <returns>The value read.</returns>
 		public long ReadLELong()
 		{
 			return (uint)ReadLEInt() | ((long)ReadLEInt() << 32);
 		}
 
-		/// <summary>
-		/// Write an unsigned short in little endian byte order.
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteLEShort(int value)
 		{
 			stream_.WriteByte((byte)(value & 0xff));
 			stream_.WriteByte((byte)((value >> 8) & 0xff));
 		}
 
-		/// <summary>
-		/// Write a ushort in little endian byte order.
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteLEUshort(ushort value)
 		{
 			stream_.WriteByte((byte)(value & 0xff));
 			stream_.WriteByte((byte)(value >> 8));
 		}
 
-		/// <summary>
-		/// Write an int in little endian byte order.
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteLEInt(int value)
 		{
 			WriteLEShort(value);
 			WriteLEShort(value >> 16);
 		}
 
-		/// <summary>
-		/// Write a uint in little endian byte order.
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteLEUint(uint value)
 		{
 			WriteLEUshort((ushort)(value & 0xffff));
 			WriteLEUshort((ushort)(value >> 16));
 		}
 
-		/// <summary>
-		/// Write a long in little endian byte order.
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteLELong(long value)
 		{
 			WriteLEInt((int)value);
 			WriteLEInt((int)(value >> 32));
 		}
 
-		/// <summary>
-		/// Write a ulong in little endian byte order.
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteLEUlong(ulong value)
 		{
 			WriteLEUint((uint)(value & 0xffffffff));
@@ -547,11 +432,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#endregion LE value reading/writing
 
-		/// <summary>
-		/// Write a data descriptor.
-		/// </summary>
-		/// <param name="entry">The entry to write a descriptor for.</param>
-		/// <returns>Returns the number of descriptor bytes written.</returns>
 		public int WriteDataDescriptor(ZipEntry entry)
 		{
 			if (entry == null)
@@ -561,11 +441,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 			int result = 0;
 
-			// Add data descriptor if flagged as required
 			if ((entry.Flags & (int)GeneralBitFlags.Descriptor) != 0)
 			{
-				// The signature is not PKZIP originally but is now described as optional
-				// in the PKZIP Appnote documenting the format.
 				WriteLEInt(ZipConstants.DataDescriptorSignature);
 				WriteLEInt(unchecked((int)(entry.Crc)));
 
@@ -588,18 +465,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return result;
 		}
 
-		/// <summary>
-		/// Read data descriptor at the end of compressed data.
-		/// </summary>
-		/// <param name="zip64">if set to <c>true</c> [zip64].</param>
-		/// <param name="data">The data to fill in.</param>
-		/// <returns>Returns the number of bytes read in the descriptor.</returns>
 		public void ReadDataDescriptor(bool zip64, DescriptorData data)
 		{
 			int intValue = ReadLEInt();
 
-			// In theory this may not be a descriptor according to PKZIP appnote.
-			// In practice its always there.
 			if (intValue != ZipConstants.DataDescriptorSignature)
 			{
 				throw new ZipException("Data descriptor signature not found");

@@ -4,10 +4,6 @@ using System.IO;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 {
-	/// <summary>
-	/// An output stream that compresses into the BZip2 format
-	/// including file header chars into another stream.
-	/// </summary>
 	public class BZip2OutputStream : Stream
 	{
 		#region Constants
@@ -109,24 +105,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 
 		#endregion Instance Fields
 
-		/// <summary>
-		/// Construct a default output stream with maximum block size
-		/// </summary>
-		/// <param name="stream">The stream to write BZip data onto.</param>
 		public BZip2OutputStream(Stream stream) : this(stream, 9)
 		{
 		}
 
-		/// <summary>
-		/// Initialise a new instance of the <see cref="BZip2OutputStream"></see>
-		/// for the specified stream, using the given blocksize.
-		/// </summary>
-		/// <param name="stream">The stream to write compressed data to.</param>
-		/// <param name="blockSize">The block size to use.</param>
-		/// <remarks>
-		/// Valid block sizes are in the range 1..9, with 1 giving
-		/// the lowest compression and 9 the highest.
-		/// </remarks>
 		public BZip2OutputStream(Stream stream, int blockSize)
 		{
 			if (stream == null)
@@ -153,25 +135,13 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			InitBlock();
 		}
 
-		/// <summary>
-		/// Ensures that resources are freed and other cleanup operations
-		/// are performed when the garbage collector reclaims the BZip2OutputStream.
-		/// </summary>
 		~BZip2OutputStream()
 		{
 			Dispose(false);
 		}
 
-		/// <summary>
-		/// Gets or sets a flag indicating ownership of underlying stream.
-		/// When the flag is true <see cref="Stream.Dispose()" /> will close the underlying stream also.
-		/// </summary>
-		/// <remarks>The default value is true.</remarks>
 		public bool IsStreamOwner { get; set; } = true;
 
-		/// <summary>
-		/// Gets a value indicating whether the current stream supports reading
-		/// </summary>
 		public override bool CanRead
 		{
 			get
@@ -180,9 +150,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether the current stream supports seeking
-		/// </summary>
 		public override bool CanSeek
 		{
 			get
@@ -191,9 +158,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether the current stream supports writing
-		/// </summary>
 		public override bool CanWrite
 		{
 			get
@@ -202,9 +166,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Gets the length in bytes of the stream
-		/// </summary>
 		public override long Length
 		{
 			get
@@ -213,9 +174,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the current position of this stream.
-		/// </summary>
 		public override long Position
 		{
 			get
@@ -228,55 +186,26 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Sets the current position of this stream to the given value.
-		/// </summary>
-		/// <param name="offset">The point relative to the offset from which to being seeking.</param>
-		/// <param name="origin">The reference point from which to begin seeking.</param>
-		/// <returns>The new position in the stream.</returns>
 		public override long Seek(long offset, SeekOrigin origin)
 		{
 			throw new NotSupportedException("BZip2OutputStream Seek not supported");
 		}
 
-		/// <summary>
-		/// Sets the length of this stream to the given value.
-		/// </summary>
-		/// <param name="value">The new stream length.</param>
 		public override void SetLength(long value)
 		{
 			throw new NotSupportedException("BZip2OutputStream SetLength not supported");
 		}
 
-		/// <summary>
-		/// Read a byte from the stream advancing the position.
-		/// </summary>
-		/// <returns>The byte read cast to an int; -1 if end of stream.</returns>
 		public override int ReadByte()
 		{
 			throw new NotSupportedException("BZip2OutputStream ReadByte not supported");
 		}
 
-		/// <summary>
-		/// Read a block of bytes
-		/// </summary>
-		/// <param name="buffer">The buffer to read into.</param>
-		/// <param name="offset">The offset in the buffer to start storing data at.</param>
-		/// <param name="count">The maximum number of bytes to read.</param>
-		/// <returns>The total number of bytes read. This might be less than the number of bytes
-		/// requested if that number of bytes are not currently available, or zero
-		/// if the end of the stream is reached.</returns>
 		public override int Read(byte[] buffer, int offset, int count)
 		{
 			throw new NotSupportedException("BZip2OutputStream Read not supported");
 		}
 
-		/// <summary>
-		/// Write a block of bytes to the stream
-		/// </summary>
-		/// <param name="buffer">The buffer containing data to write.</param>
-		/// <param name="offset">The offset of the first byte to write.</param>
-		/// <param name="count">The number of bytes to write.</param>
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			if (buffer == null)
@@ -305,10 +234,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Write a byte to the stream.
-		/// </summary>
-		/// <param name="value">The byte to write to the stream.</param>
 		public override void WriteByte(byte value)
 		{
 			int b = (256 + value) % 256;
@@ -352,9 +277,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Get the number of bytes written to output.
-		/// </summary>
 		private void WriteRun()
 		{
 			if (last < allowableBlockSize)
@@ -411,18 +333,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Get the number of bytes written to the output.
-		/// </summary>
 		public int BytesWritten
 		{
 			get { return bytesOut; }
 		}
 
-		/// <summary>
-		/// Releases the unmanaged resources used by the <see cref="BZip2OutputStream"/> and optionally releases the managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
 		override protected void Dispose(bool disposing)
 		{
 			try
@@ -461,9 +376,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			}
 		}
 
-		/// <summary>
-		/// Flush output buffers
-		/// </summary>
 		public override void Flush()
 		{
 			baseStream.Flush();
@@ -1273,7 +1185,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			set up the overshoot area for block.
 			--*/
 
-			//   if (verbosity >= 4) fprintf ( stderr, "        sort initialise ...\n" );
 			for (i = 0; i < BZip2Constants.OvershootBytes; i++)
 			{
 				block[last + i + 2] = block[(i % (last + 1)) + 1];
@@ -1500,7 +1411,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 				}
 				rNToGo--;
 				block[i + 1] ^= (byte)((rNToGo == 1) ? 1 : 0);
-				// handle 16 bit signed numbers
 				block[i + 1] &= 0xFF;
 
 				inUse[block[i + 1]] = true;
@@ -1693,8 +1603,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 
 			if (block == null || quadrant == null || zptr == null || ftab == null)
 			{
-				//		int totalDraw = (n + 1 + NUM_OVERSHOOT_BYTES) + (n + NUM_OVERSHOOT_BYTES) + n + 65537;
-				//		compressOutOfMemory ( totalDraw, n );
 			}
 
 			/*
@@ -1707,7 +1615,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.BZip2
 			of the MTF values when calculating coding tables.
 			Seems to improve compression speed by about 1%.
 			*/
-			//	szptr = zptr;
 
 			szptr = new short[2 * n];
 		}

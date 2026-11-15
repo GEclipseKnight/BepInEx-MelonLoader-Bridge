@@ -26,7 +26,6 @@ namespace MelonLoader.TinyJSON
 		}
 
 
-		// ReSharper disable once UnusedMember.Global
 		public static string Encode( object obj )
 		{
 			return Encode( obj, EncodeOptions.None );
@@ -243,7 +242,6 @@ namespace MelonLoader.TinyJSON
 				AppendColon();
 				EncodeString( type.FullName );
 
-				// ReSharper disable once RedundantAssignment
 				firstItem = false;
 			}
 
@@ -392,7 +390,6 @@ namespace MelonLoader.TinyJSON
 		}
 
 
-		// ReSharper disable once SuggestBaseTypeForParameter
 		void EncodeList( IList value, bool forceTypeHint )
 		{
 			if (value.Count == 0)

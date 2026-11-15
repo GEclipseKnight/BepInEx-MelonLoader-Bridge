@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using MelonLoader.MonoInternals.ResolveInternals;
 
@@ -12,7 +12,6 @@ namespace MelonLoader.MonoInternals
                 return false;
 
 
-            // Setup Search Directories
             string[] searchdirlist =
             {
                 MelonUtils.MelonLoaderDirectory,
@@ -25,7 +24,6 @@ namespace MelonLoader.MonoInternals
             foreach (string path in searchdirlist)
                 AddSearchDirectory(path);
 
-            // Setup Redirections
             string[] assembly_list =
             {
                 "MelonLoader",
@@ -40,7 +38,6 @@ namespace MelonLoader.MonoInternals
             return true;
         }
 
-        // Search Directories
         public static void AddSearchDirectory(string path, int priority = 0)
             => SearchDirectoryManager.Add(path, priority);
 
@@ -48,7 +45,6 @@ namespace MelonLoader.MonoInternals
             => SearchDirectoryManager.Remove(path);
 
 
-        // Assembly
         public delegate void OnAssemblyLoadHandler(Assembly assembly);
         public static event OnAssemblyLoadHandler OnAssemblyLoad;
         internal static void SafeInvoke_OnAssemblyLoad(Assembly assembly)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -26,14 +26,12 @@ namespace MelonLoader.Fixes
 			catch (Exception ex) { MelonLogger.Warning($"ProcessFix Exception: {ex}"); }
 		}
 
-		// Taken and Modified from .NET Framework's System.dll
 		private static bool get_MainWindowHandle(Process __instance, ref IntPtr __result)
         {
 			__result = mainWindowFinder.FindMainWindow(__instance.Id);
 			return false;
         }
 
-		// Taken and Modified from .NET Framework's System.dll
 		private static bool get_MainWindowTitle(Process __instance, ref string __result)
 		{
 			IntPtr intPtr = __instance.MainWindowHandle;
@@ -49,15 +47,12 @@ namespace MelonLoader.Fixes
 			return false;
 		}
 
-		// Taken and Modified from .NET Framework's System.dll
 		[DllImport("user32.dll", BestFitMapping = true, CharSet = CharSet.Auto)]
 		private static extern int GetWindowText(HandleRef hWnd, StringBuilder lpString, int nMaxCount);
 
-		// Taken and Modified from .NET Framework's System.dll
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		private static extern int GetWindowTextLength(HandleRef hWnd);
 
-		// Taken and Modified from .NET Framework's System.dll
 		internal class MainWindowFinder
         {
             private IntPtr Handle;

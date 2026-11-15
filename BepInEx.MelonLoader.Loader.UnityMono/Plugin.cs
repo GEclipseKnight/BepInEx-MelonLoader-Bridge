@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MLCore = MelonLoader.Core;
 
 namespace BepInEx.MelonLoader.Loader.UnityMono;

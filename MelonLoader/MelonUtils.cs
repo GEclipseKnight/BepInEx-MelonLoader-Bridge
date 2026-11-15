@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -150,8 +150,6 @@ namespace MelonLoader
         }
 
         private static MelonBase CheckForMelonInFrame(StackFrame sf)
-            //The JIT compiler on .NET 6 on Windows 10 (win11 is fine, somehow) really doesn't like us calling StackFrame.GetMethod here
-            //Rather than trying to work out why, I'm just going to call it via reflection.
             => GetMelonFromAssembly(((MethodBase)StackFrameGetMethod.Invoke(sf, new object[0]))?.DeclaringType?.Assembly);
 
         private static MelonBase GetMelonFromAssembly(Assembly asm)
@@ -319,7 +317,6 @@ namespace MelonLoader
                 HashAlgorithm_HashSizeValue.SetValue(_this, value);
         }
 
-        // Modified Version of System.IO.Path.HasExtension from .NET Framework's mscorlib.dll
         public static bool ContainsExtension(this string path)
         {
             if (path != null)
@@ -338,7 +335,6 @@ namespace MelonLoader
             return false;
         }
 
-        // Modified Version of System.IO.Path.CheckInvalidPathChars from .NET Framework's mscorlib.dll
         private static void CheckInvalidPathChars(this string path)
         {
             foreach (int num in path)
@@ -396,7 +392,6 @@ namespace MelonLoader
             : Utility.CombinePaths(Paths.GameRootPath, $"{Paths.ProcessName}_Data", "Managed");
         public static void SetConsoleTitle([MarshalAs(UnmanagedType.LPStr)] string title)
         {
-            // Stubbed, handled by BepInEx instead
         }
         public static string GetFileProductName(string filepath) => FileVersionInfo.GetVersionInfo(filepath).ProductName;
 

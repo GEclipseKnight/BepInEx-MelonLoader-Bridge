@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 {
-	/// <summary>
-	/// Huffman tree used for inflation
-	/// </summary>
 	public class InflaterHuffmanTree
 	{
 		#region Constants
@@ -21,14 +18,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#endregion Instance Fields
 
-		/// <summary>
-		/// Literal length tree
-		/// </summary>
 		public static InflaterHuffmanTree defLitLenTree;
 
-		/// <summary>
-		/// Distance tree
-		/// </summary>
 		public static InflaterHuffmanTree defDistTree;
 
 		static InflaterHuffmanTree()
@@ -71,12 +62,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#region Constructors
 
-		/// <summary>
-		/// Constructs a Huffman tree from the array of code lengths.
-		/// </summary>
-		/// <param name = "codeLengths">
-		/// the array of code lengths
-		/// </param>
 		public InflaterHuffmanTree(IList<byte> codeLengths)
 		{
 			BuildTree(codeLengths);
@@ -168,16 +153,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Reads the next symbol from input.  The symbol is encoded using the
-		/// huffman tree.
-		/// </summary>
-		/// <param name="input">
-		/// input the input source.
-		/// </param>
-		/// <returns>
-		/// the next symbol, or -1 if not enough input is available.
-		/// </returns>
 		public int GetSymbol(StreamManipulator input)
 		{
 			int lookahead, symbol;

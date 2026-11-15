@@ -4,72 +4,32 @@ using System;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 {
-	/// <summary>
-	/// Inflater is used to decompress data that has been compressed according
-	/// to the "deflate" standard described in rfc1951.
-	///
-	/// By default Zlib (rfc1950) headers and footers are expected in the input.
-	/// You can use constructor <code> public Inflater(bool noHeader)</code> passing true
-	/// if there is no Zlib header information
-	///
-	/// The usage is as following.  First you have to set some input with
-	/// <code>SetInput()</code>, then Inflate() it.  If inflate doesn't
-	/// inflate any bytes there may be three reasons:
-	/// <ul>
-	/// <li>IsNeedingInput() returns true because the input buffer is empty.
-	/// You have to provide more input with <code>SetInput()</code>.
-	/// NOTE: IsNeedingInput() also returns true when, the stream is finished.
-	/// </li>
-	/// <li>IsNeedingDictionary() returns true, you have to provide a preset
-	///    dictionary with <code>SetDictionary()</code>.</li>
-	/// <li>IsFinished returns true, the inflater has finished.</li>
-	/// </ul>
-	/// Once the first output byte is produced, a dictionary will not be
-	/// needed at a later stage.
-	///
-	/// author of the original java version : John Leuner, Jochen Hoenicke
-	/// </summary>
 	public class Inflater
 	{
 		#region Constants/Readonly
 
-		/// <summary>
-		/// Copy lengths for literal codes 257..285
-		/// </summary>
 		private static readonly int[] CPLENS = {
 								  3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
 								  35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258
 							  };
 
-		/// <summary>
-		/// Extra bits for literal codes 257..285
-		/// </summary>
 		private static readonly int[] CPLEXT = {
 								  0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
 								  3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0
 							  };
 
-		/// <summary>
-		/// Copy offsets for distance codes 0..29
-		/// </summary>
 		private static readonly int[] CPDIST = {
 								1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
 								257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
 								8193, 12289, 16385, 24577
 							  };
 
-		/// <summary>
-		/// Extra bits for distance codes
-		/// </summary>
 		private static readonly int[] CPDEXT = {
 								0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
 								7, 7, 8, 8, 9, 9, 10, 10, 11, 11,
 								12, 12, 13, 13
 							  };
 
-		/// <summary>
-		/// These are the possible states for an inflater
-		/// </summary>
 		private const int DECODE_HEADER = 0;
 
 		private const int DECODE_DICT = 1;
@@ -89,54 +49,22 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#region Instance Fields
 
-		/// <summary>
-		/// This variable contains the current state.
-		/// </summary>
 		private int mode;
 
-		/// <summary>
-		/// The adler checksum of the dictionary or of the decompressed
-		/// stream, as it is written in the header resp. footer of the
-		/// compressed stream.
-		/// Only valid if mode is DECODE_DICT or DECODE_CHKSUM.
-		/// </summary>
 		private int readAdler;
 
-		/// <summary>
-		/// The number of bits needed to complete the current state.  This
-		/// is valid, if mode is DECODE_DICT, DECODE_CHKSUM,
-		/// DECODE_HUFFMAN_LENBITS or DECODE_HUFFMAN_DISTBITS.
-		/// </summary>
 		private int neededBits;
 
 		private int repLength;
 		private int repDist;
 		private int uncomprLen;
 
-		/// <summary>
-		/// True, if the last block flag was set in the last block of the
-		/// inflated stream.  This means that the stream ends after the
-		/// current block.
-		/// </summary>
 		private bool isLastBlock;
 
-		/// <summary>
-		/// The total number of inflated bytes.
-		/// </summary>
 		private long totalOut;
 
-		/// <summary>
-		/// The total number of bytes set with setInput().  This is not the
-		/// value returned by the TotalIn property, since this also includes the
-		/// unprocessed input.
-		/// </summary>
 		private long totalIn;
 
-		/// <summary>
-		/// This variable stores the noHeader flag that was given to the constructor.
-		/// True means, that the inflated stream doesn't contain a Zlib header or
-		/// footer.
-		/// </summary>
 		private bool noHeader;
 
 		private readonly StreamManipulator input;
@@ -149,26 +77,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#region Constructors
 
-		/// <summary>
-		/// Creates a new inflater or RFC1951 decompressor
-		/// RFC1950/Zlib headers and footers will be expected in the input data
-		/// </summary>
 		public Inflater() : this(false)
 		{
 		}
 
-		/// <summary>
-		/// Creates a new inflater.
-		/// </summary>
-		/// <param name="noHeader">
-		/// True if no RFC1950/Zlib header and footer fields are expected in the input data
-		///
-		/// This is used for GZIPed/Zipped input.
-		///
-		/// For compatibility with
-		/// Sun JDK you should provide one byte of input more than needed in
-		/// this case.
-		/// </param>
 		public Inflater(bool noHeader)
 		{
 			this.noHeader = noHeader;
@@ -181,10 +93,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#endregion Constructors
 
-		/// <summary>
-		/// Resets the inflater so that a new stream can be decompressed.  All
-		/// pending input and output will be discarded.
-		/// </summary>
 		public void Reset()
 		{
 			mode = noHeader ? DECODE_BLOCKS : DECODE_HEADER;
@@ -199,15 +107,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			adler?.Reset();
 		}
 
-		/// <summary>
-		/// Decodes a zlib/RFC1950 header.
-		/// </summary>
-		/// <returns>
-		/// False if more input is needed.
-		/// </returns>
-		/// <exception cref="SharpZipBaseException">
-		/// The header is invalid.
-		/// </exception>
 		private bool DecodeHeader()
 		{
 			int header = input.PeekBits(16);
@@ -217,7 +116,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 			input.DropBits(16);
 
-			// The header is written in "wrong" byte order
 			header = ((header << 8) | (header >> 8)) & 0xffff;
 			if (header % 31 != 0)
 			{
@@ -248,12 +146,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return true;
 		}
 
-		/// <summary>
-		/// Decodes the dictionary checksum after the deflate header.
-		/// </summary>
-		/// <returns>
-		/// False if more input is needed.
-		/// </returns>
 		private bool DecodeDict()
 		{
 			while (neededBits > 0)
@@ -270,16 +162,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return false;
 		}
 
-		/// <summary>
-		/// Decodes the huffman encoded symbols in the input stream.
-		/// </summary>
-		/// <returns>
-		/// false if more input is needed, true if output window is
-		/// full or the current block ends.
-		/// </returns>
-		/// <exception cref="SharpZipBaseException">
-		/// if deflated stream is invalid.
-		/// </exception>
 		private bool DecodeHuffman()
 		{
 			int free = outputWindow.GetFreeSpace();
@@ -289,7 +171,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				switch (mode)
 				{
 					case DECODE_HUFFMAN:
-						// This is the inner loop so it is optimized a bit
 						while (((symbol = litlenTree.GetSymbol(input)) & ~0xff) == 0)
 						{
 							outputWindow.Write(symbol);
@@ -307,7 +188,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 							}
 							else
 							{
-								// symbol == 256: end of block
 								distTree = null;
 								litlenTree = null;
 								mode = DECODE_BLOCKS;
@@ -385,15 +265,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return true;
 		}
 
-		/// <summary>
-		/// Decodes the adler checksum after the deflate stream.
-		/// </summary>
-		/// <returns>
-		/// false if more input is needed.
-		/// </returns>
-		/// <exception cref="SharpZipBaseException">
-		/// If checksum doesn't match.
-		/// </exception>
 		private bool DecodeChksum()
 		{
 			while (neededBits > 0)
@@ -417,15 +288,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return false;
 		}
 
-		/// <summary>
-		/// Decodes the deflated stream.
-		/// </summary>
-		/// <returns>
-		/// false if more input is needed, or if finished.
-		/// </returns>
-		/// <exception cref="SharpZipBaseException">
-		/// if deflated stream is invalid.
-		/// </exception>
 		private bool Decode()
 		{
 			switch (mode)
@@ -551,41 +413,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Sets the preset dictionary.  This should only be called, if
-		/// needsDictionary() returns true and it should set the same
-		/// dictionary, that was used for deflating.  The getAdler()
-		/// function returns the checksum of the dictionary needed.
-		/// </summary>
-		/// <param name="buffer">
-		/// The dictionary.
-		/// </param>
 		public void SetDictionary(byte[] buffer)
 		{
 			SetDictionary(buffer, 0, buffer.Length);
 		}
 
-		/// <summary>
-		/// Sets the preset dictionary.  This should only be called, if
-		/// needsDictionary() returns true and it should set the same
-		/// dictionary, that was used for deflating.  The getAdler()
-		/// function returns the checksum of the dictionary needed.
-		/// </summary>
-		/// <param name="buffer">
-		/// The dictionary.
-		/// </param>
-		/// <param name="index">
-		/// The index into buffer where the dictionary starts.
-		/// </param>
-		/// <param name="count">
-		/// The number of bytes in the dictionary.
-		/// </param>
-		/// <exception cref="System.InvalidOperationException">
-		/// No dictionary is needed.
-		/// </exception>
-		/// <exception cref="SharpZipBaseException">
-		/// The adler checksum for the buffer is invalid
-		/// </exception>
 		public void SetDictionary(byte[] buffer, int index, int count)
 		{
 			if (buffer == null)
@@ -619,62 +451,17 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			mode = DECODE_BLOCKS;
 		}
 
-		/// <summary>
-		/// Sets the input.  This should only be called, if needsInput()
-		/// returns true.
-		/// </summary>
-		/// <param name="buffer">
-		/// the input.
-		/// </param>
 		public void SetInput(byte[] buffer)
 		{
 			SetInput(buffer, 0, buffer.Length);
 		}
 
-		/// <summary>
-		/// Sets the input.  This should only be called, if needsInput()
-		/// returns true.
-		/// </summary>
-		/// <param name="buffer">
-		/// The source of input data
-		/// </param>
-		/// <param name="index">
-		/// The index into buffer where the input starts.
-		/// </param>
-		/// <param name="count">
-		/// The number of bytes of input to use.
-		/// </param>
-		/// <exception cref="System.InvalidOperationException">
-		/// No input is needed.
-		/// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">
-		/// The index and/or count are wrong.
-		/// </exception>
 		public void SetInput(byte[] buffer, int index, int count)
 		{
 			input.SetInput(buffer, index, count);
 			totalIn += (long)count;
 		}
 
-		/// <summary>
-		/// Inflates the compressed stream to the output buffer.  If this
-		/// returns 0, you should check, whether IsNeedingDictionary(),
-		/// IsNeedingInput() or IsFinished() returns true, to determine why no
-		/// further output is produced.
-		/// </summary>
-		/// <param name="buffer">
-		/// the output buffer.
-		/// </param>
-		/// <returns>
-		/// The number of bytes written to the buffer, 0 if no further
-		/// output can be produced.
-		/// </returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">
-		/// if buffer has length 0.
-		/// </exception>
-		/// <exception cref="System.FormatException">
-		/// if deflated stream is invalid.
-		/// </exception>
 		public int Inflate(byte[] buffer)
 		{
 			if (buffer == null)
@@ -685,33 +472,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return Inflate(buffer, 0, buffer.Length);
 		}
 
-		/// <summary>
-		/// Inflates the compressed stream to the output buffer.  If this
-		/// returns 0, you should check, whether needsDictionary(),
-		/// needsInput() or finished() returns true, to determine why no
-		/// further output is produced.
-		/// </summary>
-		/// <param name="buffer">
-		/// the output buffer.
-		/// </param>
-		/// <param name="offset">
-		/// the offset in buffer where storing starts.
-		/// </param>
-		/// <param name="count">
-		/// the maximum number of bytes to output.
-		/// </param>
-		/// <returns>
-		/// the number of bytes written to the buffer, 0 if no further output can be produced.
-		/// </returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">
-		/// if count is less than 0.
-		/// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">
-		/// if the index and / or count are wrong.
-		/// </exception>
-		/// <exception cref="System.FormatException">
-		/// if deflated stream is invalid.
-		/// </exception>
 		public int Inflate(byte[] buffer, int offset, int count)
 		{
 			if (buffer == null)
@@ -734,7 +494,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				throw new ArgumentException("count exceeds buffer bounds");
 			}
 
-			// Special case: count may be zero
 			if (count == 0)
 			{
 				if (!IsFinished)
@@ -775,11 +534,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return bytesCopied;
 		}
 
-		/// <summary>
-		/// Returns true, if the input buffer is empty.
-		/// You should then call setInput().
-		/// NOTE: This method also returns true when the stream is finished.
-		/// </summary>
 		public bool IsNeedingInput
 		{
 			get
@@ -788,9 +542,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Returns true, if a preset dictionary is needed to inflate the input.
-		/// </summary>
 		public bool IsNeedingDictionary
 		{
 			get
@@ -799,10 +550,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Returns true, if the inflater has finished.  This means, that no
-		/// input is needed and no output can be produced.
-		/// </summary>
 		public bool IsFinished
 		{
 			get
@@ -811,15 +558,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Gets the adler checksum.  This is either the checksum of all
-		/// uncompressed bytes returned by inflate(), or if needsDictionary()
-		/// returns true (and thus no output was yet produced) this is the
-		/// adler checksum of the expected dictionary.
-		/// </summary>
-		/// <returns>
-		/// the adler checksum.
-		/// </returns>
 		public int Adler
 		{
 			get
@@ -839,12 +577,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Gets the total number of output bytes returned by Inflate().
-		/// </summary>
-		/// <returns>
-		/// the total number of output bytes.
-		/// </returns>
 		public long TotalOut
 		{
 			get
@@ -853,12 +585,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Gets the total number of processed compressed input bytes.
-		/// </summary>
-		/// <returns>
-		/// The total number of bytes of processed input bytes.
-		/// </returns>
 		public long TotalIn
 		{
 			get
@@ -867,17 +593,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Gets the number of unprocessed input bytes.  Useful, if the end of the
-		/// stream is reached and you want to further process the bytes after
-		/// the deflate stream.
-		/// </summary>
-		/// <returns>
-		/// The number of bytes of the input which have not been processed.
-		/// </returns>
 		public int RemainingInput
 		{
-			// TODO: This should be a long?
 			get
 			{
 				return input.AvailableBytes;

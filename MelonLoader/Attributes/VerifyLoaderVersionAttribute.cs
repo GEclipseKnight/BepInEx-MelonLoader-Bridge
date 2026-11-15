@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Semver;
 
 namespace MelonLoader
@@ -6,29 +6,14 @@ namespace MelonLoader
     [AttributeUsage(AttributeTargets.Assembly)]
     public class VerifyLoaderVersionAttribute : Attribute
     {
-        /// <summary>
-        /// Specified SemVersion.
-        /// </summary>
         public SemVersion SemVer { get; private set; }
 
-        /// <summary>
-        /// Specified Version Major.
-        /// </summary>
         public int Major { get; }
 
-        /// <summary>
-        /// Specified Version Minor.
-        /// </summary>
         public int Minor { get; }
 
-        /// <summary>
-        /// Specified Version Patch.
-        /// </summary>
         public int Patch { get; }
 
-        /// <summary>
-        /// If Version Specified is a Minimum.
-        /// </summary>
         public bool IsMinimum { get; private set; }
 
 

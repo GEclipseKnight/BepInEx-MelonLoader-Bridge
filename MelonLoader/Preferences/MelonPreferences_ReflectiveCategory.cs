@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Tomlet;
 using Tomlet.Exceptions;
 using Tomlet.Models;

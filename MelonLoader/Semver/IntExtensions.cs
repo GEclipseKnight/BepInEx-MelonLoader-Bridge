@@ -1,21 +1,9 @@
-﻿using System.Text;
+using System.Text;
 
 namespace Semver
 {
     internal static class IntExtensions
     {
-        /// <summary>
-        /// The number of digits in a non-negative number. Returns 1 for all
-        /// negative numbers. That is ok because we are using it to calculate
-        /// string length for a <see cref="StringBuilder"/> for numbers that
-        /// aren't supposed to be negative, but when they are it is just a little
-        /// slower.
-        /// </summary>
-        /// <remarks>
-        /// This approach is based on https://stackoverflow.com/a/51099524/268898
-        /// where the poster offers performance benchmarks showing this is the
-        /// fastest way to get a number of digits.
-        /// </remarks>
         public static int Digits(this int n)
         {
             if (n < 10) return 1;

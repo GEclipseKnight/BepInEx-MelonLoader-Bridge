@@ -6,47 +6,26 @@ using System.Reflection;
 
 namespace MelonLoader.TinyJSON
 {
-	/// <summary>
-	/// Mark members that should be included.
-	/// Public fields are included by default.
-	/// </summary>
 	[AttributeUsage( AttributeTargets.Field | AttributeTargets.Property )]
 	public sealed class Include : Attribute {}
 
 
-	/// <summary>
-	/// Mark members that should be excluded.
-	/// Private fields and all properties are excluded by default.
-	/// </summary>
 	[AttributeUsage( AttributeTargets.Field | AttributeTargets.Property )]
 	public class Exclude : Attribute {}
 
 
-	/// <summary>
-	/// Mark methods to be called after an object is decoded.
-	/// </summary>
 	[AttributeUsage( AttributeTargets.Method )]
 	public class AfterDecode : Attribute {}
 
 
-	/// <summary>
-	/// Mark methods to be called before an object is encoded.
-	/// </summary>
 	[AttributeUsage( AttributeTargets.Method )]
 	public class BeforeEncode : Attribute {}
 
 
-	/// <summary>
-	/// Mark members to force type hinting even when EncodeOptions.NoTypeHints is set.
-	/// </summary>
 	[AttributeUsage( AttributeTargets.Field | AttributeTargets.Property )]
 	public class TypeHint : Attribute {}
 
 
-	/// <summary>
-	/// Provide field and property aliases when an object is decoded.
-	/// If a field or property is not found while decoding, this list will be searched for a matching alias.
-	/// </summary>
 	[AttributeUsage( AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true )]
 	public class DecodeAlias : Attribute
 	{
@@ -67,12 +46,10 @@ namespace MelonLoader.TinyJSON
 
 
 	[Obsolete( "Use the Exclude attribute instead." )]
-	// ReSharper disable once UnusedMember.Global
 	public sealed class Skip : Exclude {}
 
 
 	[Obsolete( "Use the AfterDecode attribute instead." )]
-	// ReSharper disable once UnusedMember.Global
 	public sealed class Load : AfterDecode {}
 
 
@@ -87,7 +64,6 @@ namespace MelonLoader.TinyJSON
 	}
 
 
-	// ReSharper disable once InconsistentNaming
 	public static class JSON
 	{
 		static readonly Type includeAttrType = typeof(Include);
@@ -114,7 +90,6 @@ namespace MelonLoader.TinyJSON
 
 		public static string Dump( object data, EncodeOptions options )
 		{
-			// Invoke methods tagged with [BeforeEncode] attribute.
 			if (data != null)
 			{
 				var type = data.GetType();
@@ -258,7 +233,6 @@ namespace MelonLoader.TinyJSON
 				return (T) makeFunc.Invoke( null, new object[] { data } );
 			}
 
-			// At this point we should be dealing with a class or struct.
 			T instance;
 			var proxyObject = data as ProxyObject;
 			if (proxyObject == null)
@@ -266,7 +240,6 @@ namespace MelonLoader.TinyJSON
 				throw new InvalidCastException( "ProxyObject expected when decoding into '" + type.FullName + "'." );
 			}
 
-			// If there's a type hint, use it to create the instance.
 			var typeHint = proxyObject.TypeHint;
 			if (typeHint != null && typeHint != type.FullName)
 			{
@@ -288,11 +261,9 @@ namespace MelonLoader.TinyJSON
 			}
 			else
 			{
-				// We don't have a type hint, so just instantiate the type we have.
 				instance = Activator.CreateInstance<T>();
 			}
 
-			// Now decode fields and properties.
 			DecodeFields( data, ref instance );
 
 			return instance;
@@ -311,7 +282,6 @@ namespace MelonLoader.TinyJSON
 			{
 				var field = type.GetField( pair.Key, instanceBindingFlags );
 
-				// If the field doesn't exist, search through any [DecodeAlias] attributes.
 				if (field == null)
 				{
 					var fields = type.GetFields( instanceBindingFlags );
@@ -352,14 +322,12 @@ namespace MelonLoader.TinyJSON
 						var makeFunc = decodeTypeMethod.MakeGenericMethod( field.FieldType );
 						if (type.IsValueType)
 						{
-							// Type is a struct.
 							var instanceRef = (object) instance;
 							field.SetValue( instanceRef, makeFunc.Invoke( null, new object[] { pair.Value } ) );
 							instance = (T) instanceRef;
 						}
 						else
 						{
-							// Type is a class.
 							field.SetValue( instance, makeFunc.Invoke( null, new object[] { pair.Value } ) );
 						}
 					}
@@ -367,7 +335,6 @@ namespace MelonLoader.TinyJSON
 
 				var property = type.GetProperty( pair.Key, instanceBindingFlags );
 
-				// If the property doesn't exist, search through any [DecodeAlias] attributes.
 				if (property == null)
 				{
 					var properties = type.GetProperties( instanceBindingFlags );
@@ -394,21 +361,18 @@ namespace MelonLoader.TinyJSON
 						var makeFunc = decodeTypeMethod.MakeGenericMethod( new Type[] { property.PropertyType } );
 						if (type.IsValueType)
 						{
-							// Type is a struct.
 							var instanceRef = (object) instance;
 							property.SetValue( instanceRef, makeFunc.Invoke( null, new object[] { pair.Value } ), null );
 							instance = (T) instanceRef;
 						}
 						else
 						{
-							// Type is a class.
 							property.SetValue( instance, makeFunc.Invoke( null, new object[] { pair.Value } ), null );
 						}
 					}
 				}
 			}
 
-			// Invoke methods tagged with [AfterDecode] attribute.
 			foreach (var method in type.GetMethods( instanceBindingFlags ))
 			{
 				if (method.GetCustomAttributes( false ).AnyOfType( typeof(AfterDecode) ))
@@ -418,7 +382,6 @@ namespace MelonLoader.TinyJSON
 			}
 		}
 
-		// ReSharper disable once UnusedMethodReturnValue.Local
 		static List<T> DecodeList<T>( Variant data )
 		{
 			var list = new List<T>();
@@ -437,7 +400,6 @@ namespace MelonLoader.TinyJSON
 			return list;
 		}
 
-		// ReSharper disable once UnusedMethodReturnValue.Local
 		static Dictionary<TKey, TValue> DecodeDictionary<TKey, TValue>( Variant data )
 		{
 			var dict = new Dictionary<TKey, TValue>();
@@ -459,7 +421,6 @@ namespace MelonLoader.TinyJSON
 			return dict;
 		}
 
-		// ReSharper disable once UnusedMethodReturnValue.Local
 		static T[] DecodeArray<T>( Variant data )
 		{
 			var arrayData = data as ProxyArray;
@@ -480,7 +441,6 @@ namespace MelonLoader.TinyJSON
 			return array;
 		}
 
-		// ReSharper disable once UnusedMember.Local
 		static void DecodeMultiRankArray<T>( ProxyArray arrayData, Array array, int arrayRank, int[] indices )
 		{
 			var count = arrayData.Count;
@@ -507,7 +467,6 @@ namespace MelonLoader.TinyJSON
 		static readonly MethodInfo decodeArrayMethod = typeof(JSON).GetMethod( "DecodeArray", staticBindingFlags );
 		static readonly MethodInfo decodeMultiRankArrayMethod = typeof(JSON).GetMethod( "DecodeMultiRankArray", staticBindingFlags );
 
-		// ReSharper disable once InconsistentNaming
 		public static void SupportTypeForAOT<T>()
 		{
 			DecodeType<T>( null );
@@ -526,8 +485,6 @@ namespace MelonLoader.TinyJSON
 			DecodeDictionary<String, T>( null );
 		}
 
-		// ReSharper disable once InconsistentNaming
-		// ReSharper disable once UnusedMember.Local
 		static void SupportValueTypesForAOT()
 		{
 			SupportTypeForAOT<Int16>();

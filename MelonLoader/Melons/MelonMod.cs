@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 #pragma warning disable 0618 // Disabling the obsolete references warning to prevent the IDE going crazy when subscribing deprecated methods to some events in RegisterCallbacks
 
@@ -55,19 +55,10 @@ namespace MelonLoader
 
         #region Callbacks
 
-        /// <summary>
-        /// Runs when a new Scene is loaded.
-        /// </summary>
         public virtual void OnSceneWasLoaded(int buildIndex, string sceneName) { }
 
-        /// <summary>
-        /// Runs once a Scene is initialized.
-        /// </summary>
         public virtual void OnSceneWasInitialized(int buildIndex, string sceneName) { }
 
-        /// <summary>
-        /// Runs once a Scene unloads.
-        /// </summary>
         public virtual void OnSceneWasUnloaded(int buildIndex, string sceneName) { }
 
         #endregion

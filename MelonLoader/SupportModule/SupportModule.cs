@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -38,7 +38,6 @@ namespace MelonLoader
                     {
                         if (!enumerator.Current.LoadSpecifier())
                         {
-                            // File.Delete(ModulePath);
                             continue;
                         }
                     }
@@ -96,7 +95,6 @@ namespace MelonLoader
             return true;
         }
 
-        // Module Listing
         private class ModuleListing
         {
             internal string FileName = null;

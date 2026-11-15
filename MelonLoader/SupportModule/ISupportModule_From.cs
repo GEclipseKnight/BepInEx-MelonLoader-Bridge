@@ -1,4 +1,4 @@
-﻿namespace MelonLoader
+namespace MelonLoader
 {
     public interface ISupportModule_From
     {

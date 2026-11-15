@@ -86,7 +86,6 @@ namespace MelonLoader.TinyJSON
 		}
 
 
-		// ReSharper disable once UnusedMember.Global
 		public Dictionary<string, Variant>.ValueCollection Values
 		{
 			get

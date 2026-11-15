@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 #pragma warning disable 0618 // Disabling the obsolete references warning to prevent the IDE going crazy when subscribing deprecated methods to some events in RegisterCallbacks
 
@@ -43,24 +43,12 @@ namespace MelonLoader
 
         #region Callbacks
 
-        /// <summary>
-        /// Runs before Game Initialization.
-        /// </summary>
         public virtual void OnPreInitialization() { }
 
-        /// <summary>
-        /// Runs after Game Initialization, before OnApplicationStart and before Assembly Generation on Il2Cpp games
-        /// </summary>
         public virtual void OnApplicationEarlyStart() { }
 
-        /// <summary>
-        /// Runs before MelonMods from the Mods folder are loaded.
-        /// </summary>
         public virtual void OnPreModsLoaded() { }
 
-        /// <summary>
-        /// Runs after all MelonLoader components are fully initialized (including all MelonMods).
-        /// </summary>
         public virtual void OnApplicationStarted() { }
 
         #endregion

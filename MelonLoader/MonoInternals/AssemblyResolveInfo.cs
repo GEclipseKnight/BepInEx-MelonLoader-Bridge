@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -12,16 +12,13 @@ namespace MelonLoader.MonoInternals
 
         internal Assembly Resolve(Version requested_version)
         {
-            // Check for Override
             if (Override != null)
                 return Override;
 
-            // Check for Requested Version
             if ((requested_version != null)
                 && GetVersionSpecific(requested_version, out Assembly assembly))
                 return assembly;
 
-            // Check for Fallback
             if (Fallback != null)
                 return Fallback;
 

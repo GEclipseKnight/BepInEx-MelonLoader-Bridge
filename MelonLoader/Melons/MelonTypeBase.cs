@@ -1,19 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace MelonLoader
 {
     public abstract class MelonTypeBase<T> : MelonBase where T : MelonTypeBase<T>
     {
-        /// <summary>
-        /// List of registered <typeparamref name="T"/>s.
-        /// </summary>
         new public static ReadOnlyCollection<T> RegisteredMelons => _registeredMelons.AsReadOnly();
         new internal static List<T> _registeredMelons = new();
 
-        /// <summary>
-        /// A Human-Readable Name for <typeparamref name="T"/>.
-        /// </summary>
         public static string TypeName { get; protected internal set; }
 
         static MelonTypeBase()

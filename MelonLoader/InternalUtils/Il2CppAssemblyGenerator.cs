@@ -1,4 +1,4 @@
-﻿using MelonLoader.Modules;
+using MelonLoader.Modules;
 using System;
 using System.Diagnostics;
 using System.IO;

@@ -54,13 +54,10 @@ namespace MelonLoader.TinyJSON
 		{
 			var proxy = new ProxyObject();
 
-			// Ditch opening brace.
 			json.Read();
 
-			// {
 			while (true)
 			{
-				// ReSharper disable once SwitchStatementMissingSomeCases
 				switch (NextToken)
 				{
 					case Token.None:
@@ -73,14 +70,12 @@ namespace MelonLoader.TinyJSON
 						return proxy;
 
 					default:
-						// Key
 						string key = DecodeString();
 						if (key == null)
 						{
 							return null;
 						}
 
-						// :
 						if (NextToken != Token.Colon)
 						{
 							return null;
@@ -88,7 +83,6 @@ namespace MelonLoader.TinyJSON
 
 						json.Read();
 
-						// Value
 						proxy.Add( key, DecodeValue() );
 						break;
 				}
@@ -100,16 +94,13 @@ namespace MelonLoader.TinyJSON
 		{
 			var proxy = new ProxyArray();
 
-			// Ditch opening bracket.
 			json.Read();
 
-			// [
 			var parsing = true;
 			while (parsing)
 			{
 				var nextToken = NextToken;
 
-				// ReSharper disable once SwitchStatementMissingSomeCases
 				switch (nextToken)
 				{
 					case Token.None:
@@ -141,7 +132,6 @@ namespace MelonLoader.TinyJSON
 
 		Variant DecodeByToken( Token token )
 		{
-			// ReSharper disable once SwitchStatementMissingSomeCases
 			switch (token)
 			{
 				case Token.String:
@@ -175,7 +165,6 @@ namespace MelonLoader.TinyJSON
 		{
 			var stringBuilder = new StringBuilder();
 
-			// ditch opening quote
 			json.Read();
 
 			var parsing = true;
@@ -183,7 +172,6 @@ namespace MelonLoader.TinyJSON
 			{
 				if (json.Peek() == -1)
 				{
-					// ReSharper disable once RedundantAssignment
 					parsing = false;
 					break;
 				}
@@ -204,7 +192,6 @@ namespace MelonLoader.TinyJSON
 
 						c = NextChar;
 
-						// ReSharper disable once SwitchStatementMissingSomeCases
 						switch (c)
 						{
 							case '"':
@@ -244,8 +231,6 @@ namespace MelonLoader.TinyJSON
 								stringBuilder.Append( (char) Convert.ToInt32( hex.ToString(), 16 ) );
 								break;
 
-							//default:
-							//	throw new DecodeException( @"Illegal character following escape character: " + c );
 						}
 
 						break;
@@ -331,7 +316,6 @@ namespace MelonLoader.TinyJSON
 					return Token.None;
 				}
 
-				// ReSharper disable once SwitchStatementMissingSomeCases
 				switch (PeekChar)
 				{
 					case '{':
@@ -372,7 +356,6 @@ namespace MelonLoader.TinyJSON
 						return Token.Number;
 				}
 
-				// ReSharper disable once SwitchStatementMissingSomeCases
 				switch (NextWord)
 				{
 					case "false":

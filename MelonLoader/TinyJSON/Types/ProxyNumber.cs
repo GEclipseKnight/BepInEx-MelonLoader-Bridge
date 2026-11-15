@@ -41,7 +41,6 @@ namespace MelonLoader.TinyJSON
 			Decimal decimalValue;
 			if (Decimal.TryParse( value, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out decimalValue ))
 			{
-				// Check for decimal underflow.
 				if (decimalValue == Decimal.Zero)
 				{
 					Double parsedValue;

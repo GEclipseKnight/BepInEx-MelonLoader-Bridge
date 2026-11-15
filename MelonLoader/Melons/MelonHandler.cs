@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,14 +9,8 @@ namespace MelonLoader
 {
     public static class MelonHandler
     {
-        /// <summary>
-        /// Directory of Plugins.
-        /// </summary>
         public static string PluginsDirectory { get; internal set; }
 
-        /// <summary>
-        /// Directory of Mods.
-        /// </summary>
         public static string ModsDirectory { get; internal set; }
 
         internal static void Setup()
@@ -92,15 +86,9 @@ namespace MelonLoader
         }
 
         #region Obsolete Members
-        /// <summary>
-        /// List of Plugins.
-        /// </summary>
         [Obsolete("Use 'MelonPlugin.RegisteredMelons' instead.")]
         public static List<MelonPlugin> Plugins => MelonTypeBase<MelonPlugin>.RegisteredMelons.ToList();
 
-        /// <summary>
-        /// List of Mods.
-        /// </summary>
         [Obsolete("Use 'MelonMod.RegisteredMelons' instead.")]
         public static List<MelonMod> Mods => MelonTypeBase<MelonMod>.RegisteredMelons.ToList();
 

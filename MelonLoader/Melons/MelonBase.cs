@@ -1,4 +1,4 @@
-﻿using MelonLoader.InternalUtils;
+using MelonLoader.InternalUtils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,27 +14,15 @@ namespace MelonLoader
     {
         #region Static
 
-        /// <summary>
-        /// Called once a Melon is fully registered.
-        /// </summary>
         public static readonly MelonEvent<MelonBase> OnMelonRegistered = new();
 
-        /// <summary>
-        /// Called when a Melon unregisters.
-        /// </summary>
         public static readonly MelonEvent<MelonBase> OnMelonUnregistered = new();
 
-        /// <summary>
-        /// Called before a Melon starts initializing.
-        /// </summary>
         public static readonly MelonEvent<MelonBase> OnMelonInitializing = new();
 
         public static ReadOnlyCollection<MelonBase> RegisteredMelons => _registeredMelons.AsReadOnly();
         internal static List<MelonBase> _registeredMelons = new();
 
-        /// <summary>
-        /// Creates a new Melon instance for a Wrapper.
-        /// </summary>
         public static T CreateWrapper<T>(string name, string author, string version, MelonGameAttribute[] games = null, MelonProcessAttribute[] processes = null, int priority = 0, ConsoleColor? color = null, ConsoleColor? authorColor = null, string id = null) where T : MelonBase, new()
         {
             var melon = new T
@@ -53,9 +41,6 @@ namespace MelonLoader
             return melon;
         }
 
-        /// <summary>
-        /// Registers a List of Melons in the right order.
-        /// </summary>
         public static void RegisterSorted<T>(IEnumerable<T> melons) where T : MelonBase
         {
             if (melons == null)
@@ -85,182 +70,82 @@ namespace MelonLoader
         public readonly MelonEvent OnRegister = new();
         public readonly MelonEvent OnUnregister = new();
 
-        /// <summary>
-        /// MelonAssembly of the Melon.
-        /// </summary>
         public MelonAssembly MelonAssembly { get; internal set; }
 
-        /// <summary>
-        /// Priority of the Melon.
-        /// </summary>
         public int Priority { get; internal set; }
 
-        /// <summary>
-        /// Console Color of the Melon.
-        /// </summary>
         public ConsoleColor ConsoleColor { get; internal set; }
 
-        /// <summary>
-        /// Console Color of the Author that made this melon.
-        /// </summary>
         public ConsoleColor AuthorConsoleColor { get; internal set; }
 
-        /// <summary>
-        /// Info Attribute of the Melon.
-        /// </summary>
         public MelonInfoAttribute Info { get; internal set; }
 
-        /// <summary>
-        /// Process Attributes of the Melon.
-        /// </summary>
         public MelonProcessAttribute[] SupportedProcesses
         {
             get => _processes;
             internal set => _processes = (value == null || value.Any(x => x.Universal)) ? new MelonProcessAttribute[0] : value;
         }
 
-        /// <summary>
-        /// Game Attributes of the Melon.
-        /// </summary>
         public MelonGameAttribute[] Games
         {
             get => _games;
             internal set => _games = (value == null || value.Any(x => x.Universal)) ? new MelonGameAttribute[0] : value;
         }
 
-        /// <summary>
-        /// Game Version Attributes of the Melon.
-        /// </summary>
         public MelonGameVersionAttribute[] SupportedGameVersions
         {
             get => _gameVersions;
             internal set => _gameVersions = (value == null || value.Any(x => x.Universal)) ? new MelonGameVersionAttribute[0] : value;
         }
 
-        /// <summary>
-        /// Optional Dependencies Attribute of the Melon.
-        /// </summary>
         public MelonOptionalDependenciesAttribute OptionalDependencies { get; internal set; }
 
-        /// <summary>
-        /// Platform Attribute of the Melon.
-        /// </summary>
         public MelonPlatformAttribute SupportedPlatforms { get; internal set; }
 
-        /// <summary>
-        /// Platform Attribute of the Melon.
-        /// </summary>
         public MelonPlatformDomainAttribute SupportedDomain { get; internal set; }
 
-        /// <summary>
-        /// Verify Loader Version Attribute of the Melon.
-        /// </summary>
         public VerifyLoaderVersionAttribute SupportedMLVersion { get; internal set; }
 
-        /// <summary>
-        /// Verify Build Version Attribute of the Melon.
-        /// </summary>
         public VerifyLoaderBuildAttribute SupportedMLBuild { get; internal set; }
 
-        /// <summary>
-        /// Auto-Created Harmony Instance of the Melon.
-        /// </summary>
         public HarmonyLib.Harmony HarmonyInstance { get; internal set; }
 
-        /// <summary>
-        /// Auto-Created MelonLogger Instance of the Melon.
-        /// </summary>
         public MelonLogger.Instance LoggerInstance { get; internal set; }
 
-        /// <summary>
-        /// Optional ID of the Melon.
-        /// </summary>
         public string ID { get; internal set; }
 
-        /// <summary>
-        /// <see langword="true"/> if the Melon is registered.
-        /// </summary>
         public bool Registered { get; private set; }
 
-        /// <summary>
-        /// Name of the current Melon Type.
-        /// </summary>
         public abstract string MelonTypeName { get; }
 
         #region Callbacks
 
-        /// <summary>
-        /// Runs before Support Module Initialization and after Assembly Generation for Il2Cpp Games.
-        /// </summary>
         public virtual void OnPreSupportModule() { }
 
-        /// <summary>
-        /// Runs once per frame.
-        /// </summary>
         public virtual void OnUpdate() { }
 
-        /// <summary>
-        /// Can run multiple times per frame. Mostly used for Physics.
-        /// </summary>
         public virtual void OnFixedUpdate() { }
 
-        /// <summary>
-        /// Runs once per frame, after <see cref="OnUpdate"/>.
-        /// </summary>
         public virtual void OnLateUpdate() { }
 
-        /// <summary>
-        /// Can run multiple times per frame. Mostly used for Unity's IMGUI.
-        /// </summary>
         public virtual void OnGUI() { }
 
-        /// <summary>
-        /// Runs on a quit request. It is possible to abort the request in this callback.
-        /// </summary>
         public virtual void OnApplicationQuit() { }
 
-        /// <summary>
-        /// Runs when Melon Preferences get saved.
-        /// </summary>
         public virtual void OnPreferencesSaved() { }
 
-        /// <summary>
-        /// Runs when Melon Preferences get saved. Gets passed the Preferences's File Path.
-        /// </summary>
         public virtual void OnPreferencesSaved(string filepath) { }
 
-        /// <summary>
-        /// Runs when Melon Preferences get loaded.
-        /// </summary>
         public virtual void OnPreferencesLoaded() { }
 
-        /// <summary>
-        /// Runs when Melon Preferences get loaded. Gets passed the Preferences's File Path.
-        /// </summary>
         public virtual void OnPreferencesLoaded(string filepath) { }
 
-        /// <summary>
-        /// Runs when the Melon is registered. Executed before the Melon's info is printed to the console. This callback should only be used a constructor for the Melon.
-        /// </summary>
-        /// <remarks>
-        /// Please note that this callback may run before the Support Module is loaded.
-        /// <br>As a result, using unhollowed assemblies may not be possible yet and you would have to override <see cref="OnInitializeMelon"/> instead.</br>
-        /// </remarks>
         public virtual void OnEarlyInitializeMelon() { }
 
-        /// <summary>
-        /// Runs after the Melon has registered. This callback waits until MelonLoader has fully initialized (<see cref="MelonEvents.OnApplicationStart"/>).
-        /// </summary>
         public virtual void OnInitializeMelon() { }
 
-        /// <summary>
-        /// Runs after <see cref="OnInitializeMelon"/>. This callback waits until Unity has invoked the first 'Start' messages (<see cref="MelonEvents.OnApplicationLateStart"/>).
-        /// </summary>
         public virtual void OnLateInitializeMelon() { }
 
-        /// <summary>
-        /// Runs when the Melon is unregistered. Also runs before the Application is closed (<see cref="MelonEvents.OnApplicationDefiniteQuit"/>).
-        /// </summary>
         public virtual void OnDeinitializeMelon() { }
 
         #endregion
@@ -357,9 +242,6 @@ namespace MelonLoader
             MelonLogger.WriteSpacer();
         }
 
-        /// <summary>
-        /// Registers the Melon.
-        /// </summary>
         public bool Register()
         {
             if (Registered)
@@ -472,18 +354,11 @@ namespace MelonLoader
             OnPreferencesLoaded();
         }
 
-        /// <summary>
-        /// Tries to find a registered Melon that matches the given Info.
-        /// </summary>
         public static MelonBase FindMelon(string melonName, string melonAuthor)
         {
             return _registeredMelons.Find(x => x.Info.Name == melonName && x.Info.Author == melonAuthor);
         }
 
-        /// <summary>
-        /// Unregisters the Melon and all other Melons located in the same Assembly.
-        /// <para>This only unsubscribes the Melons from all Callbacks/<see cref="MelonEvent"/>s and unpatches all Methods that were patched by Harmony, but doesn't actually unload the whole Assembly.</para>
-        /// </summary>
         public void Unregister(string reason = null, bool silent = false)
         {
             if (!Registered)

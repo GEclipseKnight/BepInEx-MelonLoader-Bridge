@@ -1,27 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Checksum
 {
 	internal static class CrcUtilities
 	{
-		/// <summary>
-		/// The number of slicing lookup tables to generate.
-		/// </summary>
 		internal const int SlicingDegree = 16;
 
-		/// <summary>
-		/// Generates multiple CRC lookup tables for a given polynomial, stored
-		/// in a linear array of uints. The first block (i.e. the first 256
-		/// elements) is the same as the byte-by-byte CRC lookup table. 
-		/// </summary>
-		/// <param name="polynomial">The generating CRC polynomial</param>
-		/// <param name="isReversed">Whether the polynomial is in reversed bit order</param>
-		/// <returns>A linear array of 256 * <see cref="SlicingDegree"/> elements</returns>
-		/// <remarks>
-		/// This table could also be generated as a rectangular array, but the
-		/// JIT compiler generates slower code than if we use a linear array.
-		/// Known issue, see: https://github.com/dotnet/runtime/issues/30275
-		/// </remarks>
 		internal static uint[] GenerateSlicingLookupTable(uint polynomial, bool isReversed)
 		{
 			var table = new uint[256 * SlicingDegree];
@@ -51,21 +35,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Checksum
 			return table;
 		}
 
-		/// <summary>
-		/// Mixes the first four bytes of input with <paramref name="checkValue"/>
-		/// using normal ordering before calling <see cref="UpdateDataCommon"/>.
-		/// </summary>
-		/// <param name="input">Array of data to checksum</param>
-		/// <param name="offset">Offset to start reading <paramref name="input"/> from</param>
-		/// <param name="crcTable">The table to use for slicing-by-16 lookup</param>
-		/// <param name="checkValue">Checksum state before this update call</param>
-		/// <returns>A new unfinalized checksum value</returns>
-		/// <seealso cref="UpdateDataForReversedPoly"/>
-		/// <remarks>
-		/// Assumes input[offset]..input[offset + 15] are valid array indexes.
-		/// For performance reasons, this must be checked by the caller.
-		/// </remarks>
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static uint UpdateDataForNormalPoly(byte[] input, int offset, uint[] crcTable, uint checkValue)
 		{
 			byte x1 = (byte)((byte)(checkValue >> 24) ^ input[offset]);
@@ -76,21 +45,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Checksum
 			return UpdateDataCommon(input, offset, crcTable, x1, x2, x3, x4);
 		}
 
-		/// <summary>
-		/// Mixes the first four bytes of input with <paramref name="checkValue"/>
-		/// using reflected ordering before calling <see cref="UpdateDataCommon"/>.
-		/// </summary>
-		/// <param name="input">Array of data to checksum</param>
-		/// <param name="offset">Offset to start reading <paramref name="input"/> from</param>
-		/// <param name="crcTable">The table to use for slicing-by-16 lookup</param>
-		/// <param name="checkValue">Checksum state before this update call</param>
-		/// <returns>A new unfinalized checksum value</returns>
-		/// <seealso cref="UpdateDataForNormalPoly"/>
-		/// <remarks>
-		/// Assumes input[offset]..input[offset + 15] are valid array indexes.
-		/// For performance reasons, this must be checked by the caller.
-		/// </remarks>
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static uint UpdateDataForReversedPoly(byte[] input, int offset, uint[] crcTable, uint checkValue)
 		{
 			byte x1 = (byte)((byte)checkValue ^ input[offset]);
@@ -101,36 +55,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Checksum
 			return UpdateDataCommon(input, offset, crcTable, x1, x2, x3, x4);
 		}
 
-		/// <summary>
-		/// A shared method for updating an unfinalized CRC checksum using slicing-by-16.
-		/// </summary>
-		/// <param name="input">Array of data to checksum</param>
-		/// <param name="offset">Offset to start reading <paramref name="input"/> from</param>
-		/// <param name="crcTable">The table to use for slicing-by-16 lookup</param>
-		/// <param name="x1">First byte of input after mixing with the old CRC</param>
-		/// <param name="x2">Second byte of input after mixing with the old CRC</param>
-		/// <param name="x3">Third byte of input after mixing with the old CRC</param>
-		/// <param name="x4">Fourth byte of input after mixing with the old CRC</param>
-		/// <returns>A new unfinalized checksum value</returns>
-		/// <remarks>
-		/// <para>
-		/// Even though the first four bytes of input are fed in as arguments,
-		/// <paramref name="offset"/> should be the same value passed to this
-		/// function's caller (either <see cref="UpdateDataForNormalPoly"/> or
-		/// <see cref="UpdateDataForReversedPoly"/>). This method will get inlined
-		/// into both functions, so using the same offset produces faster code.
-		/// </para>
-		/// <para>
-		/// Because most processors running C# have some kind of instruction-level
-		/// parallelism, the order of XOR operations can affect performance. This
-		/// ordering assumes that the assembly code generated by the just-in-time
-		/// compiler will emit a bunch of arithmetic operations for checking array
-		/// bounds. Then it opportunistically XORs a1 and a2 to keep the processor
-		/// busy while those other parts of the pipeline handle the range check
-		/// calculations.
-		/// </para>
-		/// </remarks>
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static uint UpdateDataCommon(byte[] input, int offset, uint[] crcTable, byte x1, byte x2, byte x3, byte x4)
 		{
 			uint result;

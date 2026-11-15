@@ -8,7 +8,6 @@ namespace MelonLoader.TinyJSON
 		protected static readonly IFormatProvider FormatProvider = new NumberFormatInfo();
 
 
-		// ReSharper disable once UnusedMember.Global
 		public void Make<T>( out T item )
 		{
 			JSON.MakeInto( this, out item );
@@ -29,8 +28,6 @@ namespace MelonLoader.TinyJSON
 		}
 
 
-		// ReSharper disable once InconsistentNaming
-		// ReSharper disable once UnusedMember.Global
 		public string ToJSON()
 		{
 			return JSON.Dump( this );
@@ -144,7 +141,6 @@ namespace MelonLoader.TinyJSON
 		}
 
 
-		// ReSharper disable once UnusedMemberInSuper.Global
 		public virtual Variant this[ string key ]
 		{
 			get
@@ -152,7 +148,6 @@ namespace MelonLoader.TinyJSON
 				throw new NotSupportedException();
 			}
 
-			// ReSharper disable once UnusedMember.Global
 			set
 			{
 				throw new NotSupportedException();
@@ -160,7 +155,6 @@ namespace MelonLoader.TinyJSON
 		}
 
 
-		// ReSharper disable once UnusedMemberInSuper.Global
 		public virtual Variant this[ int index ]
 		{
 			get
@@ -168,7 +162,6 @@ namespace MelonLoader.TinyJSON
 				throw new NotSupportedException();
 			}
 
-			// ReSharper disable once UnusedMember.Global
 			set
 			{
 				throw new NotSupportedException();

@@ -1,4 +1,4 @@
-﻿namespace MelonLoader.NativeUtils.PEParser
+namespace MelonLoader.NativeUtils.PEParser
 {
     public struct ImageFileHeader
     {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
@@ -25,7 +25,6 @@ namespace MelonLoader.InternalUtils
             vertices = new Vertex[size];
             Dictionary<string, Vertex> nameLookup = new Dictionary<string, Vertex>(size);
 
-            // Create a vertex in the dependency graph for each Melon to load
             for (int i = 0; i < size; ++i)
             {
                 Assembly melonAssembly = melons[i].MelonAssembly.Assembly;
@@ -36,7 +35,6 @@ namespace MelonLoader.InternalUtils
                 nameLookup[melonAssembly.GetName().Name] = melonVertex;
             }
 
-            // Add an edge for each dependency between Melons
             SortedDictionary<string, IList<AssemblyName>> melonsWithMissingDeps = new SortedDictionary<string, IList<AssemblyName>>();
             SortedDictionary<string, IList<AssemblyName>> melonsWithIncompatibilities = new SortedDictionary<string, IList<AssemblyName>>();
             List<AssemblyName> missingDependencies = new List<AssemblyName>();
@@ -103,14 +101,12 @@ namespace MelonLoader.InternalUtils
                 }
 
                 if (missingDependencies.Count > 0)
-                    // melonVertex.skipLoading = true;
                     melonsWithMissingDeps.Add(melonVertex.melon.Info.Name, missingDependencies.ToArray());
 
                 if (incompatibilities.Count > 0)
                     melonsWithIncompatibilities.Add(melonVertex.melon.Info.Name, incompatibilities.ToArray());
             }
 
-            // Some Melons are missing dependencies. Don't load these Melons and show an error message
             if (melonsWithMissingDeps.Count > 0)
                 MelonLogger.Warning(BuildMissingDependencyMessage(melonsWithMissingDeps));
 
@@ -118,7 +114,6 @@ namespace MelonLoader.InternalUtils
                 MelonLogger.Warning(BuildIncompatibleAssembliesMessage(melonsWithIncompatibilities));
         }
 
-        // Returns true if 'assembly' was already loaded or could be loaded, false if the required assembly was missing.
         private static bool TryLoad(AssemblyName assembly)
         {
             try
@@ -171,7 +166,6 @@ namespace MelonLoader.InternalUtils
             SortedList<string, Vertex> loadableMelons = new SortedList<string, Vertex>();
             int skippedMelons = 0;
 
-            // Find all sinks in the dependency graph, i.e. Melons without any dependencies on other Melons
             for (int i = 0; i < vertices.Length; ++i)
             {
                 Vertex vertex = vertices[i];
@@ -182,7 +176,6 @@ namespace MelonLoader.InternalUtils
                     loadableMelons.Add(vertex.name, vertex);
             }
 
-            // Perform the (reverse) topological sorting
             while (loadableMelons.Count > 0)
             {
                 Vertex melon = loadableMelons.Values[0];
@@ -203,7 +196,6 @@ namespace MelonLoader.InternalUtils
                 }
             }
 
-            // Check if all Melons were either loaded or skipped. If this is not the case, there is a cycle in the dependency graph
             if (loadedMelons.Count + skippedMelons < vertices.Length)
             {
                 StringBuilder errorMessage = new StringBuilder("Some Melons could not be loaded due to a cyclic dependency:\n");

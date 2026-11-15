@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 
 namespace MelonLoader
 {
-    /// <summary>
-    /// An info class for broken Melons.
-    /// </summary>
     public sealed class RottenMelon
     {
         public readonly MelonAssembly assembly;

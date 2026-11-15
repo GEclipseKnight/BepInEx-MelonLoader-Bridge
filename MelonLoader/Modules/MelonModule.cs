@@ -1,13 +1,10 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
 namespace MelonLoader.Modules
 {
-    /// <summary>
-    /// A base for external MelonLoader modules.
-    /// </summary>
     public abstract class MelonModule
     {
         private Type moduleType;

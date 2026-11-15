@@ -2,38 +2,23 @@ using System;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 {
-	/// <summary>
-	/// This is the DeflaterHuffman class.
-	///
-	/// This class is <i>not</i> thread safe.  This is inherent in the API, due
-	/// to the split of Deflate and SetInput.
-	///
-	/// author of the original java version : Jochen Hoenicke
-	/// </summary>
 	public class DeflaterHuffman
 	{
 		private const int BUFSIZE = 1 << (DeflaterConstants.DEFAULT_MEM_LEVEL + 6);
 		private const int LITERAL_NUM = 286;
 
-		// Number of distance codes
 		private const int DIST_NUM = 30;
 
-		// Number of codes used to transfer bit lengths
 		private const int BITLEN_NUM = 19;
 
-		// repeat previous bit length 3-6 times (2 bits of repeat count)
 		private const int REP_3_6 = 16;
 
-		// repeat a zero length 3-10 times  (3 bits of repeat count)
 		private const int REP_3_10 = 17;
 
-		// repeat a zero length 11-138 times  (7 bits of repeat count)
 		private const int REP_11_138 = 18;
 
 		private const int EOF_SYMBOL = 256;
 
-		// The lengths of the bit length codes are sent in order of decreasing
-		// probability, to avoid transmitting the lengths for unused bit length codes.
 		private static readonly int[] BL_ORDER = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 
 		private static readonly byte[] bit4Reverse = {
@@ -92,9 +77,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 			#endregion Constructors
 
-			/// <summary>
-			/// Resets the internal state of the tree
-			/// </summary>
 			public void Reset()
 			{
 				for (int i = 0; i < freqs.Length; i++)
@@ -107,19 +89,9 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 			public void WriteSymbol(int code)
 			{
-				//				if (DeflaterConstants.DEBUGGING) {
-				//					freqs[code]--;
-				//					//  	  Console.Write("writeSymbol("+freqs.length+","+code+"): ");
-				//				}
 				dh.pending.WriteBits(codes[code] & 0xffff, length[code]);
 			}
 
-			/// <summary>
-			/// Check that all frequencies are zero
-			/// </summary>
-			/// <exception cref="SharpZipBaseException">
-			/// At least one frequency is non-zero
-			/// </exception>
 			public void CheckEmpty()
 			{
 				bool empty = true;
@@ -134,20 +106,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				}
 			}
 
-			/// <summary>
-			/// Set static codes and length
-			/// </summary>
-			/// <param name="staticCodes">new codes</param>
-			/// <param name="staticLengths">length for new codes</param>
 			public void SetStaticCodes(short[] staticCodes, byte[] staticLengths)
 			{
 				codes = staticCodes;
 				length = staticLengths;
 			}
 
-			/// <summary>
-			/// Build dynamic codes and lengths
-			/// </summary>
 			public void BuildCodes()
 			{
 				int numSymbols = freqs.Length;
@@ -156,19 +120,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 				codes = new short[freqs.Length];
 
-				//				if (DeflaterConstants.DEBUGGING) {
-				//					//Console.WriteLine("buildCodes: "+freqs.Length);
-				//				}
 
 				for (int bits = 0; bits < maxLength; bits++)
 				{
 					nextCode[bits] = code;
 					code += bl_counts[bits] << (15 - bits);
 
-					//					if (DeflaterConstants.DEBUGGING) {
-					//						//Console.WriteLine("bits: " + ( bits + 1) + " count: " + bl_counts[bits]
-					//						                  +" nextCode: "+code);
-					//					}
 				}
 
 #if DebugDeflation
@@ -182,10 +139,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					int bits = length[i];
 					if (bits > 0)
 					{
-						//						if (DeflaterConstants.DEBUGGING) {
-						//								//Console.WriteLine("codes["+i+"] = rev(" + nextCode[bits-1]+"),
-						//								                  +bits);
-						//						}
 
 						codes[i] = BitReverse(nextCode[bits - 1]);
 						nextCode[bits - 1] += 1 << (16 - bits);
@@ -213,7 +166,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					int freq = freqs[n];
 					if (freq != 0)
 					{
-						// Insert n into heap
 						int pos = heapLen++;
 						int ppos;
 						while (pos > 0 && freqs[heap[ppos = (pos - 1) / 2]] > freq)
@@ -261,7 +213,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					int first = heap[0];
 					int last = heap[--heapLen];
 
-					// Propagate the hole to the leafs of the heap
 					int ppos = 0;
 					int path = 1;
 
@@ -289,14 +240,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 					int second = heap[0];
 
-					// Create a new node father of first and second
 					last = numNodes++;
 					childs[2 * last] = first;
 					childs[2 * last + 1] = second;
 					int mindepth = Math.Min(values[first] & 0xff, values[second] & 0xff);
 					values[last] = lastVal = values[first] + values[second] - mindepth + 1;
 
-					// Again, propagate the hole to the leafs
 					ppos = 0;
 					path = 1;
 
@@ -312,7 +261,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 						path = ppos * 2 + 1;
 					}
 
-					// Now propagate the new element down along path
 					while ((path = ppos) > 0 && values[heap[ppos = (path - 1) / 2]] > lastVal)
 					{
 						heap[path] = heap[ppos];
@@ -328,10 +276,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				BuildLength(childs);
 			}
 
-			/// <summary>
-			/// Get encoded length
-			/// </summary>
-			/// <returns>Encoded length, the sum of frequencies * lengths</returns>
 			public int GetEncodedLength()
 			{
 				int len = 0;
@@ -342,10 +286,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				return len;
 			}
 
-			/// <summary>
-			/// Scan a literal or distance tree to determine the frequencies of the codes
-			/// in the bit length tree.
-			/// </summary>
 			public void CalcBLFreq(Tree blTree)
 			{
 				int max_count;               /* max repeat count */
@@ -404,10 +344,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				}
 			}
 
-			/// <summary>
-			/// Write tree values
-			/// </summary>
-			/// <param name="blTree">Tree to write</param>
 			public void WriteTree(Tree blTree)
 			{
 				int max_count;               // max repeat count
@@ -484,7 +420,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					bl_counts[i] = 0;
 				}
 
-				// First calculate optimal bit lengths
 				int[] lengths = new int[numNodes];
 				lengths[numNodes - 1] = 0;
 
@@ -502,20 +437,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 					}
 					else
 					{
-						// A leaf node
 						int bitLength = lengths[i];
 						bl_counts[bitLength - 1]++;
 						this.length[childs[2 * i]] = (byte)lengths[i];
 					}
 				}
 
-				//				if (DeflaterConstants.DEBUGGING) {
-				//					//Console.WriteLine("Tree "+freqs.Length+" lengths:");
-				//					for (int i=0; i < numLeafs; i++) {
-				//						//Console.WriteLine("Node "+childs[2*i]+" freq: "+freqs[childs[2*i]]
-				//						                  + " len: "+length[childs[2*i]]);
-				//					}
-				//				}
 
 				if (overflow == 0)
 				{
@@ -525,13 +452,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				int incrBitLen = maxLength - 1;
 				do
 				{
-					// Find the first bit length which could increase:
 					while (bl_counts[--incrBitLen] == 0)
 					{
 					}
 
-					// Move this node one down and remove a corresponding
-					// number of overflow nodes.
 					do
 					{
 						bl_counts[incrBitLen]--;
@@ -563,34 +487,22 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 						int childPtr = 2 * childs[nodePtr++];
 						if (childs[childPtr + 1] == -1)
 						{
-							// We found another leaf
 							length[childs[childPtr]] = (byte)bits;
 							n--;
 						}
 					}
 				}
-				//				if (DeflaterConstants.DEBUGGING) {
-				//					//Console.WriteLine("*** After overflow elimination. ***");
-				//					for (int i=0; i < numLeafs; i++) {
-				//						//Console.WriteLine("Node "+childs[2*i]+" freq: "+freqs[childs[2*i]]
-				//						                  + " len: "+length[childs[2*i]]);
-				//					}
-				//				}
 			}
 		}
 
 		#region Instance Fields
 
-		/// <summary>
-		/// Pending buffer to use
-		/// </summary>
 		public DeflaterPending pending;
 
 		private Tree literalTree;
 		private Tree distTree;
 		private Tree blTree;
 
-		// Buffer for distances
 		private short[] d_buf;
 
 		private byte[] l_buf;
@@ -601,8 +513,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		static DeflaterHuffman()
 		{
-			// See RFC 1951 3.2.6
-			// Literal codes
 			staticLCodes = new short[LITERAL_NUM];
 			staticLLength = new byte[LITERAL_NUM];
 
@@ -631,7 +541,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				staticLLength[i++] = 8;
 			}
 
-			// Distance codes
 			staticDCodes = new short[DIST_NUM];
 			staticDLength = new byte[DIST_NUM];
 			for (i = 0; i < DIST_NUM; i++)
@@ -641,10 +550,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Construct instance with pending buffer
-		/// </summary>
-		/// <param name="pending">Pending buffer to use</param>
 		public DeflaterHuffman(DeflaterPending pending)
 		{
 			this.pending = pending;
@@ -657,9 +562,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			l_buf = new byte[BUFSIZE];
 		}
 
-		/// <summary>
-		/// Reset internal state
-		/// </summary>
 		public void Reset()
 		{
 			last_lit = 0;
@@ -669,10 +571,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			blTree.Reset();
 		}
 
-		/// <summary>
-		/// Write all trees to pending buffer
-		/// </summary>
-		/// <param name="blTreeCodes">The number/rank of treecodes to send.</param>
 		public void SendAllTrees(int blTreeCodes)
 		{
 			blTree.BuildCodes();
@@ -695,9 +593,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 #endif
 		}
 
-		/// <summary>
-		/// Compress current buffer writing data to pending buffer
-		/// </summary>
 		public void CompressBlock()
 		{
 			for (int i = 0; i < last_lit; i++)
@@ -706,9 +601,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				int dist = d_buf[i];
 				if (dist-- != 0)
 				{
-					//					if (DeflaterConstants.DEBUGGING) {
-					//						Console.Write("["+(dist+1)+","+(litlen+3)+"]: ");
-					//					}
 
 					int lc = Lcode(litlen);
 					literalTree.WriteSymbol(lc);
@@ -730,13 +622,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				}
 				else
 				{
-					//					if (DeflaterConstants.DEBUGGING) {
-					//						if (litlen > 32 && litlen < 127) {
-					//							Console.Write("("+(char)litlen+"): ");
-					//						} else {
-					//							Console.Write("{"+litlen+"}: ");
-					//						}
-					//					}
 					literalTree.WriteSymbol(litlen);
 				}
 			}
@@ -756,19 +641,9 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 #endif
 		}
 
-		/// <summary>
-		/// Flush block to output with no compression
-		/// </summary>
-		/// <param name="stored">Data to write</param>
-		/// <param name="storedOffset">Index of first byte to write</param>
-		/// <param name="storedLength">Count of bytes to write</param>
-		/// <param name="lastBlock">True if this is the last block</param>
 		public void FlushStoredBlock(byte[] stored, int storedOffset, int storedLength, bool lastBlock)
 		{
 #if DebugDeflation
-			//			if (DeflaterConstants.DEBUGGING) {
-			//				//Console.WriteLine("Flushing stored block "+ storedLength);
-			//			}
 #endif
 			pending.WriteBits((DeflaterConstants.STORED_BLOCK << 1) + (lastBlock ? 1 : 0), 3);
 			pending.AlignToByte();
@@ -778,26 +653,16 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			Reset();
 		}
 
-		/// <summary>
-		/// Flush block to output with compression
-		/// </summary>
-		/// <param name="stored">Data to flush</param>
-		/// <param name="storedOffset">Index of first byte to flush</param>
-		/// <param name="storedLength">Count of bytes to flush</param>
-		/// <param name="lastBlock">True if this is the last block</param>
 		public void FlushBlock(byte[] stored, int storedOffset, int storedLength, bool lastBlock)
 		{
 			literalTree.freqs[EOF_SYMBOL]++;
 
-			// Build trees
 			literalTree.BuildTree();
 			distTree.BuildTree();
 
-			// Calculate bitlen frequency
 			literalTree.CalcBLFreq(blTree);
 			distTree.CalcBLFreq(blTree);
 
-			// Build bitlen tree
 			blTree.BuildTree();
 
 			int blTreeCodes = 4;
@@ -823,23 +688,16 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 			if (opt_len >= static_len)
 			{
-				// Force static trees
 				opt_len = static_len;
 			}
 
 			if (storedOffset >= 0 && storedLength + 4 < opt_len >> 3)
 			{
-				// Store Block
 
-				//				if (DeflaterConstants.DEBUGGING) {
-				//					//Console.WriteLine("Storing, since " + storedLength + " < " + opt_len
-				//					                  + " <= " + static_len);
-				//				}
 				FlushStoredBlock(stored, storedOffset, storedLength, lastBlock);
 			}
 			else if (opt_len == static_len)
 			{
-				// Encode with static tree
 				pending.WriteBits((DeflaterConstants.STATIC_TREES << 1) + (lastBlock ? 1 : 0), 3);
 				literalTree.SetStaticCodes(staticLCodes, staticLLength);
 				distTree.SetStaticCodes(staticDCodes, staticDLength);
@@ -848,7 +706,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 			else
 			{
-				// Encode with dynamic tree
 				pending.WriteBits((DeflaterConstants.DYN_TREES << 1) + (lastBlock ? 1 : 0), 3);
 				SendAllTrees(blTreeCodes);
 				CompressBlock();
@@ -856,46 +713,21 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Get value indicating if internal buffer is full
-		/// </summary>
-		/// <returns>true if buffer is full</returns>
 		public bool IsFull()
 		{
 			return last_lit >= BUFSIZE;
 		}
 
-		/// <summary>
-		/// Add literal to buffer
-		/// </summary>
-		/// <param name="literal">Literal value to add to buffer.</param>
-		/// <returns>Value indicating internal buffer is full</returns>
 		public bool TallyLit(int literal)
 		{
-			//			if (DeflaterConstants.DEBUGGING) {
-			//				if (lit > 32 && lit < 127) {
-			//					//Console.WriteLine("("+(char)lit+")");
-			//				} else {
-			//					//Console.WriteLine("{"+lit+"}");
-			//				}
-			//			}
 			d_buf[last_lit] = 0;
 			l_buf[last_lit++] = (byte)literal;
 			literalTree.freqs[literal]++;
 			return IsFull();
 		}
 
-		/// <summary>
-		/// Add distance code and length to literal and distance trees
-		/// </summary>
-		/// <param name="distance">Distance code</param>
-		/// <param name="length">Length</param>
-		/// <returns>Value indicating if internal buffer is full</returns>
 		public bool TallyDist(int distance, int length)
 		{
-			//			if (DeflaterConstants.DEBUGGING) {
-			//				//Console.WriteLine("[" + distance + "," + length + "]");
-			//			}
 
 			d_buf[last_lit] = (short)distance;
 			l_buf[last_lit++] = (byte)(length - 3);
@@ -916,11 +748,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return IsFull();
 		}
 
-		/// <summary>
-		/// Reverse the bits of a 16 bit value.
-		/// </summary>
-		/// <param name="toReverse">Value to reverse bits</param>
-		/// <returns>Value with bits reversed</returns>
 		public static short BitReverse(int toReverse)
 		{
 			return (short)(bit4Reverse[toReverse & 0xF] << 12 |

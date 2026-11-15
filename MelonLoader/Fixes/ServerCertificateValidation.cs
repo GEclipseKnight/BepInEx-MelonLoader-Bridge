@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
@@ -12,12 +12,10 @@ namespace MelonLoader.Fixes
         {
             Type SPMType = typeof(ServicePointManager);
 
-            // ServicePointManager.Expect100Continue
             FieldInfo expectContinue = SPMType.GetField(nameof(expectContinue), BindingFlags.NonPublic | BindingFlags.Static);
             if (expectContinue != null)
                 expectContinue.SetValue(null, true);
 
-            //ServicePointManager.SecurityProtocol
             FieldInfo _securityProtocol = SPMType.GetField(nameof(_securityProtocol), BindingFlags.NonPublic | BindingFlags.Static);
             if (_securityProtocol != null)
                 _securityProtocol.SetValue(null,
@@ -29,7 +27,6 @@ namespace MelonLoader.Fixes
             ServicePointManager.ServerCertificateValidationCallback += CertificateValidation;
         }
         
-        // Based on: https://stackoverflow.com/questions/43457050/error-getting-response-stream-write-the-authentication-or-decryption-has-faile
         private static bool CertificateValidation(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             if (sslPolicyErrors == SslPolicyErrors.None)

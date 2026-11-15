@@ -7,47 +7,20 @@ using static MelonLoader.ICSharpCode.SharpZipLib.Zip.ZipEntryFactory;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 {
-	/// <summary>
-	/// FastZipEvents supports all events applicable to <see cref="FastZip">FastZip</see> operations.
-	/// </summary>
 	public class FastZipEvents
 	{
-		/// <summary>
-		/// Delegate to invoke when processing directories.
-		/// </summary>
 		public event EventHandler<DirectoryEventArgs> ProcessDirectory;
 
-		/// <summary>
-		/// Delegate to invoke when processing files.
-		/// </summary>
 		public ProcessFileHandler ProcessFile;
 
-		/// <summary>
-		/// Delegate to invoke during processing of files.
-		/// </summary>
 		public ProgressHandler Progress;
 
-		/// <summary>
-		/// Delegate to invoke when processing for a file has been completed.
-		/// </summary>
 		public CompletedFileHandler CompletedFile;
 
-		/// <summary>
-		/// Delegate to invoke when processing directory failures.
-		/// </summary>
 		public DirectoryFailureHandler DirectoryFailure;
 
-		/// <summary>
-		/// Delegate to invoke when processing file failures.
-		/// </summary>
 		public FileFailureHandler FileFailure;
 
-		/// <summary>
-		/// Raise the <see cref="DirectoryFailure">directory failure</see> event.
-		/// </summary>
-		/// <param name="directory">The directory causing the failure.</param>
-		/// <param name="e">The exception for this event.</param>
-		/// <returns>A boolean indicating if execution should continue or not.</returns>
 		public bool OnDirectoryFailure(string directory, Exception e)
 		{
 			bool result = false;
@@ -62,12 +35,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return result;
 		}
 
-		/// <summary>
-		/// Fires the <see cref="FileFailure"> file failure handler delegate</see>.
-		/// </summary>
-		/// <param name="file">The file causing the failure.</param>
-		/// <param name="e">The exception for this failure.</param>
-		/// <returns>A boolean indicating if execution should continue or not.</returns>
 		public bool OnFileFailure(string file, Exception e)
 		{
 			FileFailureHandler handler = FileFailure;
@@ -82,11 +49,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return result;
 		}
 
-		/// <summary>
-		/// Fires the <see cref="ProcessFile">ProcessFile delegate</see>.
-		/// </summary>
-		/// <param name="file">The file being processed.</param>
-		/// <returns>A boolean indicating if execution should continue or not.</returns>
 		public bool OnProcessFile(string file)
 		{
 			bool result = true;
@@ -101,11 +63,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return result;
 		}
 
-		/// <summary>
-		/// Fires the <see cref="CompletedFile"/> delegate
-		/// </summary>
-		/// <param name="file">The file whose processing has been completed.</param>
-		/// <returns>A boolean indicating if execution should continue or not.</returns>
 		public bool OnCompletedFile(string file)
 		{
 			bool result = true;
@@ -119,12 +76,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return result;
 		}
 
-		/// <summary>
-		/// Fires the <see cref="ProcessDirectory">process directory</see> delegate.
-		/// </summary>
-		/// <param name="directory">The directory being processed.</param>
-		/// <param name="hasMatchingFiles">Flag indicating if the directory has matching files as determined by the current filter.</param>
-		/// <returns>A <see cref="bool"/> of true if the operation should continue; false otherwise.</returns>
 		public bool OnProcessDirectory(string directory, bool hasMatchingFiles)
 		{
 			bool result = true;
@@ -138,12 +89,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			return result;
 		}
 
-		/// <summary>
-		/// The minimum timespan between <see cref="Progress"/> events.
-		/// </summary>
-		/// <value>The minimum period of time between <see cref="Progress"/> events.</value>
-		/// <seealso cref="Progress"/>
-		/// <remarks>The default interval is three seconds.</remarks>
 		public TimeSpan ProgressInterval
 		{
 			get { return progressInterval_; }
@@ -157,31 +102,16 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 		#endregion Instance Fields
 	}
 
-	/// <summary>
-	/// FastZip provides facilities for creating and extracting zip files.
-	/// </summary>
 	public class FastZip
 	{
 		#region Enumerations
 
-		/// <summary>
-		/// Defines the desired handling when overwriting files during extraction.
-		/// </summary>
 		public enum Overwrite
 		{
-			/// <summary>
-			/// Prompt the user to confirm overwriting
-			/// </summary>
 			Prompt,
 
-			/// <summary>
-			/// Never overwrite files.
-			/// </summary>
 			Never,
 
-			/// <summary>
-			/// Always overwrite files.
-			/// </summary>
 			Always
 		}
 
@@ -189,40 +119,22 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#region Constructors
 
-		/// <summary>
-		/// Initialise a default instance of <see cref="FastZip"/>.
-		/// </summary>
 		public FastZip()
 		{
 		}
 
-		/// <summary>
-		/// Initialise a new instance of <see cref="FastZip"/> using the specified <see cref="TimeSetting"/>
-		/// </summary>
-		/// <param name="timeSetting">The <see cref="TimeSetting">time setting</see> to use when creating or extracting <see cref="ZipEntry">Zip entries</see>.</param>
-		/// <remarks>Using <see cref="TimeSetting.LastAccessTime">TimeSetting.LastAccessTime</see><see cref="TimeSetting.LastAccessTimeUtc">[Utc]</see> when
-		/// creating an archive will set the file time to the moment of reading.
-		/// </remarks>
 		public FastZip(TimeSetting timeSetting)
 		{
 			entryFactory_ = new ZipEntryFactory(timeSetting);
 			restoreDateTimeOnExtract_ = true;
 		}
 
-		/// <summary>
-		/// Initialise a new instance of <see cref="FastZip"/> using the specified <see cref="DateTime"/>
-		/// </summary>
-		/// <param name="time">The time to set all <see cref="ZipEntry.DateTime"/> values for created or extracted <see cref="ZipEntry">Zip Entries</see>.</param>
 		public FastZip(DateTime time)
 		{
 			entryFactory_ = new ZipEntryFactory(time);
 			restoreDateTimeOnExtract_ = true;
 		}
 
-		/// <summary>
-		/// Initialise a new instance of <see cref="FastZip"/>
-		/// </summary>
-		/// <param name="events">The <see cref="FastZipEvents">events</see> to use during operations.</param>
 		public FastZip(FastZipEvents events)
 		{
 			events_ = events;
@@ -232,37 +144,20 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#region Properties
 
-		/// <summary>
-		/// Get/set a value indicating whether empty directories should be created.
-		/// </summary>
 		public bool CreateEmptyDirectories
 		{
 			get { return createEmptyDirectories_; }
 			set { createEmptyDirectories_ = value; }
 		}
 
-		/// <summary>
-		/// Get / set the password value.
-		/// </summary>
 		public string Password
 		{
 			get { return password_; }
 			set { password_ = value; }
 		}
 
-		/// <summary>
-		/// Get / set the method of encrypting entries.
-		/// </summary>
-		/// <remarks>
-		/// Only applies when <see cref="Password"/> is set.
-		/// Defaults to ZipCrypto for backwards compatibility purposes.
-		/// </remarks>
 		public ZipEncryptionMethod EntryEncryptionMethod { get; set; } = ZipEncryptionMethod.ZipCrypto;
 
-		/// <summary>
-		/// Get or set the <see cref="INameTransform"></see> active when creating Zip files.
-		/// </summary>
-		/// <seealso cref="EntryFactory"></seealso>
 		public INameTransform NameTransform
 		{
 			get { return entryFactory_.NameTransform; }
@@ -272,9 +167,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			}
 		}
 
-		/// <summary>
-		/// Get or set the <see cref="IEntryFactory"></see> active when creating Zip files.
-		/// </summary>
 		public IEntryFactory EntryFactory
 		{
 			get { return entryFactory_; }
@@ -291,28 +183,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			}
 		}
 
-		/// <summary>
-		/// Gets or sets the setting for <see cref="UseZip64">Zip64 handling when writing.</see>
-		/// </summary>
-		/// <remarks>
-		/// The default value is dynamic which is not backwards compatible with old
-		/// programs and can cause problems with XP's built in compression which cant
-		/// read Zip64 archives. However it does avoid the situation were a large file
-		/// is added and cannot be completed correctly.
-		/// NOTE: Setting the size for entries before they are added is the best solution!
-		/// By default the EntryFactory used by FastZip will set the file size.
-		/// </remarks>
 		public UseZip64 UseZip64
 		{
 			get { return useZip64_; }
 			set { useZip64_ = value; }
 		}
 
-		/// <summary>
-		/// Get/set a value indicating whether file dates and times should
-		/// be restored when extracting files from an archive.
-		/// </summary>
-		/// <remarks>The default value is false.</remarks>
 		public bool RestoreDateTimeOnExtract
 		{
 			get
@@ -325,20 +201,12 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			}
 		}
 
-		/// <summary>
-		/// Get/set a value indicating whether file attributes should
-		/// be restored during extract operations
-		/// </summary>
 		public bool RestoreAttributesOnExtract
 		{
 			get { return restoreAttributesOnExtract_; }
 			set { restoreAttributesOnExtract_ = value; }
 		}
 
-		/// <summary>
-		/// Get/set the Compression Level that will be used
-		/// when creating the zip
-		/// </summary>
 		public Deflater.CompressionLevel CompressionLevel
 		{
 			get { return compressionLevel_; }
@@ -349,108 +217,46 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#region Delegates
 
-		/// <summary>
-		/// Delegate called when confirming overwriting of files.
-		/// </summary>
 		public delegate bool ConfirmOverwriteDelegate(string fileName);
 
 		#endregion Delegates
 
 		#region CreateZip
 
-		/// <summary>
-		/// Create a zip file.
-		/// </summary>
-		/// <param name="zipFileName">The name of the zip file to create.</param>
-		/// <param name="sourceDirectory">The directory to source files from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="fileFilter">The <see cref="PathFilter">file filter</see> to apply.</param>
-		/// <param name="directoryFilter">The <see cref="PathFilter">directory filter</see> to apply.</param>
 		public void CreateZip(string zipFileName, string sourceDirectory,
 			bool recurse, string fileFilter, string directoryFilter)
 		{
 			CreateZip(File.Create(zipFileName), sourceDirectory, recurse, fileFilter, directoryFilter);
 		}
 
-		/// <summary>
-		/// Create a zip file/archive.
-		/// </summary>
-		/// <param name="zipFileName">The name of the zip file to create.</param>
-		/// <param name="sourceDirectory">The directory to obtain files and directories from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="fileFilter">The file filter to apply.</param>
 		public void CreateZip(string zipFileName, string sourceDirectory, bool recurse, string fileFilter)
 		{
 			CreateZip(File.Create(zipFileName), sourceDirectory, recurse, fileFilter, null);
 		}
 
-		/// <summary>
-		/// Create a zip archive sending output to the <paramref name="outputStream"/> passed.
-		/// </summary>
-		/// <param name="outputStream">The stream to write archive data to.</param>
-		/// <param name="sourceDirectory">The directory to source files from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="fileFilter">The <see cref="PathFilter">file filter</see> to apply.</param>
-		/// <param name="directoryFilter">The <see cref="PathFilter">directory filter</see> to apply.</param>
-		/// <remarks>The <paramref name="outputStream"/> is closed after creation.</remarks>
 		public void CreateZip(Stream outputStream, string sourceDirectory, bool recurse, string fileFilter, string directoryFilter)
 		{
 			CreateZip(outputStream, sourceDirectory, recurse, fileFilter, directoryFilter, false);
 		}
 
-		/// <summary>
-		/// Create a zip archive sending output to the <paramref name="outputStream"/> passed.
-		/// </summary>
-		/// <param name="outputStream">The stream to write archive data to.</param>
-		/// <param name="sourceDirectory">The directory to source files from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="fileFilter">The <see cref="PathFilter">file filter</see> to apply.</param>
-		/// <param name="directoryFilter">The <see cref="PathFilter">directory filter</see> to apply.</param>
-		/// <param name="leaveOpen">true to leave <paramref name="outputStream"/> open after the zip has been created, false to dispose it.</param>
 		public void CreateZip(Stream outputStream, string sourceDirectory, bool recurse, string fileFilter, string directoryFilter, bool leaveOpen)
 		{
 			var scanner = new FileSystemScanner(fileFilter, directoryFilter);
 			CreateZip(outputStream, sourceDirectory, recurse, scanner, leaveOpen);
 		}
 
-		/// <summary>
-		/// Create a zip file.
-		/// </summary>
-		/// <param name="zipFileName">The name of the zip file to create.</param>
-		/// <param name="sourceDirectory">The directory to source files from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="fileFilter">The <see cref="IScanFilter">file filter</see> to apply.</param>
-		/// <param name="directoryFilter">The <see cref="IScanFilter">directory filter</see> to apply.</param>
 		public void CreateZip(string zipFileName, string sourceDirectory,
 			bool recurse, IScanFilter fileFilter, IScanFilter directoryFilter)
 		{
 			CreateZip(File.Create(zipFileName), sourceDirectory, recurse, fileFilter, directoryFilter, false);
 		}
 
-		/// <summary>
-		/// Create a zip archive sending output to the <paramref name="outputStream"/> passed.
-		/// </summary>
-		/// <param name="outputStream">The stream to write archive data to.</param>
-		/// <param name="sourceDirectory">The directory to source files from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="fileFilter">The <see cref="IScanFilter">file filter</see> to apply.</param>
-		/// <param name="directoryFilter">The <see cref="IScanFilter">directory filter</see> to apply.</param>
-		/// <param name="leaveOpen">true to leave <paramref name="outputStream"/> open after the zip has been created, false to dispose it.</param>
 		public void CreateZip(Stream outputStream, string sourceDirectory, bool recurse, IScanFilter fileFilter, IScanFilter directoryFilter, bool leaveOpen = false)
 		{
 			var scanner = new FileSystemScanner(fileFilter, directoryFilter);
 			CreateZip(outputStream, sourceDirectory, recurse, scanner, leaveOpen);
 		}
 
-		/// <summary>
-		/// Create a zip archive sending output to the <paramref name="outputStream"/> passed.
-		/// </summary>
-		/// <param name="outputStream">The stream to write archive data to.</param>
-		/// <param name="sourceDirectory">The directory to source files from.</param>
-		/// <param name="recurse">True to recurse directories, false for no recursion.</param>
-		/// <param name="scanner">For performing the actual file system scan</param>
-		/// <param name="leaveOpen">true to leave <paramref name="outputStream"/> open after the zip has been created, false to dispose it.</param>
-		/// <remarks>The <paramref name="outputStream"/> is closed after creation.</remarks>
 		private void CreateZip(Stream outputStream, string sourceDirectory, bool recurse, FileSystemScanner scanner, bool leaveOpen)
 		{
 			NameTransform = new ZipNameTransform(sourceDirectory);
@@ -495,28 +301,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 
 		#region ExtractZip
 
-		/// <summary>
-		/// Extract the contents of a zip file.
-		/// </summary>
-		/// <param name="zipFileName">The zip file to extract from.</param>
-		/// <param name="targetDirectory">The directory to save extracted information in.</param>
-		/// <param name="fileFilter">A filter to apply to files.</param>
 		public void ExtractZip(string zipFileName, string targetDirectory, string fileFilter)
 		{
 			ExtractZip(zipFileName, targetDirectory, Overwrite.Always, null, fileFilter, null, restoreDateTimeOnExtract_);
 		}
 
-		/// <summary>
-		/// Extract the contents of a zip file.
-		/// </summary>
-		/// <param name="zipFileName">The zip file to extract from.</param>
-		/// <param name="targetDirectory">The directory to save extracted information in.</param>
-		/// <param name="overwrite">The style of <see cref="Overwrite">overwriting</see> to apply.</param>
-		/// <param name="confirmDelegate">A delegate to invoke when confirming overwriting.</param>
-		/// <param name="fileFilter">A filter to apply to files.</param>
-		/// <param name="directoryFilter">A filter to apply to directories.</param>
-		/// <param name="restoreDateTime">Flag indicating whether to restore the date and time for extracted files.</param>
-		/// <param name="allowParentTraversal">Allow parent directory traversal in file paths (e.g. ../file)</param>
 		public void ExtractZip(string zipFileName, string targetDirectory,
 							   Overwrite overwrite, ConfirmOverwriteDelegate confirmDelegate,
 							   string fileFilter, string directoryFilter, bool restoreDateTime, bool allowParentTraversal = false)
@@ -525,18 +314,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			ExtractZip(inputStream, targetDirectory, overwrite, confirmDelegate, fileFilter, directoryFilter, restoreDateTime, true, allowParentTraversal);
 		}
 
-		/// <summary>
-		/// Extract the contents of a zip file held in a stream.
-		/// </summary>
-		/// <param name="inputStream">The seekable input stream containing the zip to extract from.</param>
-		/// <param name="targetDirectory">The directory to save extracted information in.</param>
-		/// <param name="overwrite">The style of <see cref="Overwrite">overwriting</see> to apply.</param>
-		/// <param name="confirmDelegate">A delegate to invoke when confirming overwriting.</param>
-		/// <param name="fileFilter">A filter to apply to files.</param>
-		/// <param name="directoryFilter">A filter to apply to directories.</param>
-		/// <param name="restoreDateTime">Flag indicating whether to restore the date and time for extracted files.</param>
-		/// <param name="isStreamOwner">Flag indicating whether the inputStream will be closed by this method.</param>
-		/// <param name="allowParentTraversal">Allow parent directory traversal in file paths (e.g. ../file)</param>
 		public void ExtractZip(Stream inputStream, string targetDirectory,
 					   Overwrite overwrite, ConfirmOverwriteDelegate confirmDelegate,
 					   string fileFilter, string directoryFilter, bool restoreDateTime,
@@ -569,7 +346,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 					var entry = (ZipEntry)enumerator.Current;
 					if (entry.IsFile)
 					{
-						// TODO Path.GetDirectory can fail here on invalid characters.
 						if (directoryFilter_.IsMatch(Path.GetDirectoryName(entry.Name)) && fileFilter_.IsMatch(entry.Name))
 						{
 							ExtractEntry(entry);
@@ -584,7 +360,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 					}
 					else
 					{
-						// Do nothing for volume labels etc...
 					}
 				}
 			}
@@ -625,14 +400,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			{
 				try
 				{
-					// The open below is equivalent to OpenRead which guarantees that if opened the
-					// file will not be changed by subsequent openers, but precludes opening in some cases
-					// were it could succeed. ie the open may fail as its already open for writing and the share mode should reflect that.
 					using (FileStream stream = File.Open(e.Name, FileMode.Open, FileAccess.Read, FileShare.Read))
 					{
 						ZipEntry entry = entryFactory_.MakeFileEntry(e.Name);
 
-						// Set up AES encryption for the entry if required.
 						ConfigureEntryEncryption(entry);
 
 						outputStream_.PutNextEntry(entry);
@@ -654,11 +425,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 			}
 		}
 
-		// Set up the encryption method to use for the specific entry.
 		private void ConfigureEntryEncryption(ZipEntry entry)
 		{
-			// Only alter the entries options if AES isn't already enabled for it
-			// (it might have been set up by the entry factory, and if so we let that take precedence)
 			if (!string.IsNullOrEmpty(Password) && entry.AESEncryptionStrength == 0)
 			{
 				switch (EntryEncryptionMethod)
@@ -797,7 +565,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 						if (RestoreAttributesOnExtract && entry.IsDOSEntry && (entry.ExternalFileAttributes != -1))
 						{
 							var fileAttributes = (FileAttributes)entry.ExternalFileAttributes;
-							// TODO: FastZip - Setting of other file attributes on extraction is a little trickier.
 							fileAttributes &= (FileAttributes.Archive | FileAttributes.Normal | FileAttributes.ReadOnly | FileAttributes.Hidden);
 							File.SetAttributes(targetName, fileAttributes);
 						}
@@ -837,7 +604,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip
 				doExtraction = !(string.IsNullOrEmpty(targetName));
 			}
 
-			// TODO: Fire delegate/throw exception were compression method not supported, or name is invalid?
 
 			string dirName = string.Empty;
 

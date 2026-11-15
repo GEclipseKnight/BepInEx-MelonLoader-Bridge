@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Tomlet;
 using Tomlet.Exceptions;
 using Tomlet.Models;
@@ -112,11 +112,9 @@ namespace MelonLoader.Preferences.IO
             }
             catch (TomlTypeMismatchException)
             {
-                //Ignore
             }
             catch (TomlNoSuchValueException)
             {
-                //Ignore
             }
         }
 
@@ -194,11 +192,9 @@ namespace MelonLoader.Preferences.IO
                 }
                 catch (TomlTypeMismatchException)
                 {
-                    //Ignore
                 }
                 catch (TomlNoSuchValueException)
                 {
-                    //Ignore
                 }
 
                 return null;
@@ -217,11 +213,9 @@ namespace MelonLoader.Preferences.IO
                 }
                 catch (TomlTypeMismatchException)
                 {
-                    //Ignore
                 }
                 catch (TomlNoSuchValueException)
                 {
-                    //Ignore
                 }
             }
         }

@@ -1,13 +1,10 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace MelonLoader.NativeUtils.PEParser
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct ImageSectionHeader
     {
-        //[FieldOffset(0)]
-        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
-        //public char[8] name;
         [FieldOffset(8)]
         public int virtualSize;
         [FieldOffset(12)]

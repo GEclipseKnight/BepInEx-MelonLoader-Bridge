@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 #pragma warning disable 0618
@@ -232,12 +232,8 @@ namespace MelonLoader
         private static bHapticsLib.PositionID PositionTypeToPositionID(PositionType pos)
             => (pos) switch
             {
-                //PositionType.All => bHapticsLib.PositionID.All,
-                //PositionType.Left => bHapticsLib.PositionID.Left,
-                //PositionType.Right => bHapticsLib.PositionID.Right,
                 PositionType.Vest => bHapticsLib.PositionID.Vest,
                 PositionType.Head => bHapticsLib.PositionID.Head,
-                //PositionType.Racket => bHapticsLib.PositionID.Racket,
                 PositionType.HandL => bHapticsLib.PositionID.HandLeft,
                 PositionType.HandR => bHapticsLib.PositionID.HandRight,
                 PositionType.FootL => bHapticsLib.PositionID.FootLeft,
@@ -248,10 +244,6 @@ namespace MelonLoader
                 PositionType.VestBack => bHapticsLib.PositionID.VestBack,
                 PositionType.GloveLeft => bHapticsLib.PositionID.GloveLeft,
                 PositionType.GloveRight => bHapticsLib.PositionID.GloveRight,
-                //PositionType.Custom1 => bHapticsLib.PositionID.Custom1,
-                //PositionType.Custom2 => bHapticsLib.PositionID.Custom2,
-                //PositionType.Custom3 => bHapticsLib.PositionID.Custom3,
-                //PositionType.Custom4 => bHapticsLib.PositionID.Custom4,
                 _ => bHapticsLib.PositionID.Head
             };
     }

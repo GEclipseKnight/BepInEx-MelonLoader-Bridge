@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -8,7 +8,6 @@ namespace MelonLoader.NativeUtils.PEParser
     {
         public static unsafe ImageNtHeaders* AnalyseModuleWin(IntPtr moduleBaseAddress)
         {
-            //MelonLoader.MelonLogger.Msg("[moduleBaseAddress+0x0]: " + (*(byte*)(moduleBaseAddress + 0x0)));
             if (*(byte*)((long)moduleBaseAddress + 0x0) != 0x4D || *(byte*)((long)moduleBaseAddress + 0x1) != 0x5A)
                 throw new ArgumentException("The passed module isn't a valid PE file");
 
@@ -52,16 +51,12 @@ namespace MelonLoader.NativeUtils.PEParser
             ImageDataDirectory* imageDirectoryEntryExport = MelonUtils.IsGame32Bit() ? &imageNtHeaders->optionalHeader32.exportTable : &imageNtHeaders->optionalHeader64.exportTable;
 
             ImageExportDirectory* pExportDirectory = (ImageExportDirectory*)((long)moduleBaseAddress + imageDirectoryEntryExport->virtualAddress);
-            //MelonLoader.MelonLogger.Msg("pExportDirectory at " + string.Format("{0:X}", (ulong)pExportDirectory - (ulong)moduleBaseAddress));
             for (uint i = 0; i < imageDirectoryEntryExport->size / sizeof(ImageExportDirectory); ++i)
             {
                 ImageExportDirectory* pExportDirectoryI = pExportDirectory + i;
-                //MelonLoader.MelonLogger.Msg("pExportDirectoryI->name: " + string.Format("{0:X}", pExportDirectoryI->name));
                 if (pExportDirectoryI->name != 0)
                 {
                     string imagename = Marshal.PtrToStringAnsi((IntPtr)((long)moduleBaseAddress + pExportDirectoryI->name));
-                    //string imagename = CppUtils.CharArrayPtrToString((IntPtr)pExportDirectoryI->name);
-                    //MelonLoader.MelonLogger.Msg("imagename: " + imagename);
                     /*
                     if (imagename != "UnityPlayer.dll")
                         continue;
@@ -78,7 +73,6 @@ namespace MelonLoader.NativeUtils.PEParser
                         long functionnameAddress = moduleBaseAddress + *(int*)(baseNameOffset + j * 4);
                         long functionaddress = moduleBaseAddress + *(int*)(baseFunctionOffset + ordinal * 4);
                         string importname = Marshal.PtrToStringAnsi((IntPtr)functionnameAddress);
-                        //MelonLoader.MelonLogger.Msg($"{imagename}::{importname} @ 0x{((ulong)functionaddress - (ulong)moduleBaseAddress):X} (0x{functionaddress:X} - 0x{moduleBaseAddress:X})");
                         if (importname == importName)
                             return (IntPtr)functionaddress;
                     }

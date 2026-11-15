@@ -4,18 +4,8 @@ using System.Security.Cryptography;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 {
-	/// <summary>
-	/// PkzipClassic embodies the classic or original encryption facilities used in Pkzip archives.
-	/// While it has been superceded by more recent and more powerful algorithms, its still in use and
-	/// is viable for preventing casual snooping
-	/// </summary>
 	public abstract class PkzipClassic : SymmetricAlgorithm
 	{
-		/// <summary>
-		/// Generates new encryption keys based on given seed
-		/// </summary>
-		/// <param name="seed">The seed value to initialise keys with.</param>
-		/// <returns>A new key value.</returns>
 		static public byte[] GenerateKeys(byte[] seed)
 		{
 			if (seed == null)
@@ -59,28 +49,14 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 		}
 	}
 
-	/// <summary>
-	/// PkzipClassicCryptoBase provides the low level facilities for encryption
-	/// and decryption using the PkzipClassic algorithm.
-	/// </summary>
 	internal class PkzipClassicCryptoBase
 	{
-		/// <summary>
-		/// Transform a single byte
-		/// </summary>
-		/// <returns>
-		/// The transformed value
-		/// </returns>
 		protected byte TransformByte()
 		{
 			uint temp = ((keys[2] & 0xFFFF) | 2);
 			return (byte)((temp * (temp ^ 1)) >> 8);
 		}
 
-		/// <summary>
-		/// Set the key schedule for encryption/decryption.
-		/// </summary>
-		/// <param name="keyData">The data use to set the keys from.</param>
 		protected void SetKeys(byte[] keyData)
 		{
 			if (keyData == null)
@@ -99,9 +75,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			keys[2] = (uint)((keyData[11] << 24) | (keyData[10] << 16) | (keyData[9] << 8) | keyData[8]);
 		}
 
-		/// <summary>
-		/// Update encryption keys
-		/// </summary>
 		protected void UpdateKeys(byte ch)
 		{
 			keys[0] = Crc32.ComputeCrc32(keys[0], ch);
@@ -110,9 +83,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			keys[2] = Crc32.ComputeCrc32(keys[2], (byte)(keys[1] >> 24));
 		}
 
-		/// <summary>
-		/// Reset the internal state.
-		/// </summary>
 		protected void Reset()
 		{
 			keys[0] = 0;
@@ -127,15 +97,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 		#endregion Instance Fields
 	}
 
-	/// <summary>
-	/// PkzipClassic CryptoTransform for encryption.
-	/// </summary>
 	internal class PkzipClassicEncryptCryptoTransform : PkzipClassicCryptoBase, ICryptoTransform
 	{
-		/// <summary>
-		/// Initialise a new instance of <see cref="PkzipClassicEncryptCryptoTransform"></see>
-		/// </summary>
-		/// <param name="keyBlock">The key block to use.</param>
 		internal PkzipClassicEncryptCryptoTransform(byte[] keyBlock)
 		{
 			SetKeys(keyBlock);
@@ -143,13 +106,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 
 		#region ICryptoTransform Members
 
-		/// <summary>
-		/// Transforms the specified region of the specified byte array.
-		/// </summary>
-		/// <param name="inputBuffer">The input for which to compute the transform.</param>
-		/// <param name="inputOffset">The offset into the byte array from which to begin using data.</param>
-		/// <param name="inputCount">The number of bytes in the byte array to use as data.</param>
-		/// <returns>The computed transform.</returns>
 		public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
 		{
 			byte[] result = new byte[inputCount];
@@ -157,16 +113,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			return result;
 		}
 
-		/// <summary>
-		/// Transforms the specified region of the input byte array and copies
-		/// the resulting transform to the specified region of the output byte array.
-		/// </summary>
-		/// <param name="inputBuffer">The input for which to compute the transform.</param>
-		/// <param name="inputOffset">The offset into the input byte array from which to begin using data.</param>
-		/// <param name="inputCount">The number of bytes in the input byte array to use as data.</param>
-		/// <param name="outputBuffer">The output to which to write the transform.</param>
-		/// <param name="outputOffset">The offset into the output byte array from which to begin writing data.</param>
-		/// <returns>The number of bytes written.</returns>
 		public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
 		{
 			for (int i = inputOffset; i < inputOffset + inputCount; ++i)
@@ -178,9 +124,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			return inputCount;
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether the current transform can be reused.
-		/// </summary>
 		public bool CanReuseTransform
 		{
 			get
@@ -189,9 +132,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Gets the size of the input data blocks in bytes.
-		/// </summary>
 		public int InputBlockSize
 		{
 			get
@@ -200,9 +140,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Gets the size of the output data blocks in bytes.
-		/// </summary>
 		public int OutputBlockSize
 		{
 			get
@@ -211,9 +148,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether multiple blocks can be transformed.
-		/// </summary>
 		public bool CanTransformMultipleBlocks
 		{
 			get
@@ -226,9 +160,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 
 		#region IDisposable Members
 
-		/// <summary>
-		/// Cleanup internal state.
-		/// </summary>
 		public void Dispose()
 		{
 			Reset();
@@ -237,15 +168,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 		#endregion IDisposable Members
 	}
 
-	/// <summary>
-	/// PkzipClassic CryptoTransform for decryption.
-	/// </summary>
 	internal class PkzipClassicDecryptCryptoTransform : PkzipClassicCryptoBase, ICryptoTransform
 	{
-		/// <summary>
-		/// Initialise a new instance of <see cref="PkzipClassicDecryptCryptoTransform"></see>.
-		/// </summary>
-		/// <param name="keyBlock">The key block to decrypt with.</param>
 		internal PkzipClassicDecryptCryptoTransform(byte[] keyBlock)
 		{
 			SetKeys(keyBlock);
@@ -253,13 +177,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 
 		#region ICryptoTransform Members
 
-		/// <summary>
-		/// Transforms the specified region of the specified byte array.
-		/// </summary>
-		/// <param name="inputBuffer">The input for which to compute the transform.</param>
-		/// <param name="inputOffset">The offset into the byte array from which to begin using data.</param>
-		/// <param name="inputCount">The number of bytes in the byte array to use as data.</param>
-		/// <returns>The computed transform.</returns>
 		public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
 		{
 			byte[] result = new byte[inputCount];
@@ -267,16 +184,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			return result;
 		}
 
-		/// <summary>
-		/// Transforms the specified region of the input byte array and copies
-		/// the resulting transform to the specified region of the output byte array.
-		/// </summary>
-		/// <param name="inputBuffer">The input for which to compute the transform.</param>
-		/// <param name="inputOffset">The offset into the input byte array from which to begin using data.</param>
-		/// <param name="inputCount">The number of bytes in the input byte array to use as data.</param>
-		/// <param name="outputBuffer">The output to which to write the transform.</param>
-		/// <param name="outputOffset">The offset into the output byte array from which to begin writing data.</param>
-		/// <returns>The number of bytes written.</returns>
 		public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)
 		{
 			for (int i = inputOffset; i < inputOffset + inputCount; ++i)
@@ -288,9 +195,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			return inputCount;
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether the current transform can be reused.
-		/// </summary>
 		public bool CanReuseTransform
 		{
 			get
@@ -299,9 +203,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Gets the size of the input data blocks in bytes.
-		/// </summary>
 		public int InputBlockSize
 		{
 			get
@@ -310,9 +211,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Gets the size of the output data blocks in bytes.
-		/// </summary>
 		public int OutputBlockSize
 		{
 			get
@@ -321,9 +219,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Gets a value indicating whether multiple blocks can be transformed.
-		/// </summary>
 		public bool CanTransformMultipleBlocks
 		{
 			get
@@ -336,9 +231,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 
 		#region IDisposable Members
 
-		/// <summary>
-		/// Cleanup internal state.
-		/// </summary>
 		public void Dispose()
 		{
 			Reset();
@@ -347,16 +239,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 		#endregion IDisposable Members
 	}
 
-	/// <summary>
-	/// Defines a wrapper object to access the Pkzip algorithm.
-	/// This class cannot be inherited.
-	/// </summary>
 	public sealed class PkzipClassicManaged : PkzipClassic
 	{
-		/// <summary>
-		/// Get / set the applicable block size in bits.
-		/// </summary>
-		/// <remarks>The only valid block size is 8.</remarks>
 		public override int BlockSize
 		{
 			get
@@ -373,9 +257,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Get an array of legal <see cref="KeySizes">key sizes.</see>
-		/// </summary>
 		public override KeySizes[] LegalKeySizes
 		{
 			get
@@ -386,17 +267,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Generate an initial vector.
-		/// </summary>
 		public override void GenerateIV()
 		{
-			// Do nothing.
 		}
 
-		/// <summary>
-		/// Get an array of legal <see cref="KeySizes">block sizes</see>.
-		/// </summary>
 		public override KeySizes[] LegalBlockSizes
 		{
 			get
@@ -407,9 +281,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Get / set the key value applicable.
-		/// </summary>
 		public override byte[] Key
 		{
 			get
@@ -438,9 +309,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			}
 		}
 
-		/// <summary>
-		/// Generate a new random key.
-		/// </summary>
 		public override void GenerateKey()
 		{
 			key_ = new byte[12];
@@ -448,12 +316,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			rng.GetBytes(key_);
 		}
 
-		/// <summary>
-		/// Create an encryptor.
-		/// </summary>
-		/// <param name="rgbKey">The key to use for this encryptor.</param>
-		/// <param name="rgbIV">Initialisation vector for the new encryptor.</param>
-		/// <returns>Returns a new PkzipClassic encryptor</returns>
 		public override ICryptoTransform CreateEncryptor(
 			byte[] rgbKey,
 			byte[] rgbIV)
@@ -462,12 +324,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Encryption
 			return new PkzipClassicEncryptCryptoTransform(Key);
 		}
 
-		/// <summary>
-		/// Create a decryptor.
-		/// </summary>
-		/// <param name="rgbKey">Keys to use for this new decryptor.</param>
-		/// <param name="rgbIV">Initialisation vector for the new decryptor.</param>
-		/// <returns>Returns a new decryptor.</returns>
 		public override ICryptoTransform CreateDecryptor(
 			byte[] rgbKey,
 			byte[] rgbIV)

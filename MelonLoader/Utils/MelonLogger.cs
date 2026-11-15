@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using BepInEx.Logging;
 
@@ -120,7 +120,6 @@ namespace MelonLoader
         internal static void ThrowInternalFailure(string v)
         {
             BepInExLog.LogError($"[{DateTime.Now}] [INTERNAL FAILURE] {v}");
-            // process is usually killed here but i'm not about to do that
             throw new Exception("Melonloader internal failure");
         }
         internal static void WriteSpacer()

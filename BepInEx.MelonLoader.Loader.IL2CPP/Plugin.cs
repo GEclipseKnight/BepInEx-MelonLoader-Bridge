@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using BepInEx.Unity.IL2CPP;
@@ -15,18 +15,15 @@ namespace BepInEx.MelonLoader.Loader.IL2CPP
         {
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
-                // First check if the assembly is already loaded
                 foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
                 {
                     if (asm.FullName == args.Name)
                         return asm;
                 }
                 
-                // Then try to resolve from MelonLoader assemblies
                 if (args.Name.Contains("MelonLoader"))
                     return typeof(MLCore).Assembly;
                     
-                // Try to load from BepInEx core and interop directories
                 string assemblyName = new AssemblyName(args.Name).Name + ".dll";
                 string corePath = Path.Combine(Paths.BepInExRootPath, "core", assemblyName);
                 string interopPath = Path.Combine(Paths.BepInExRootPath, "interop", assemblyName);

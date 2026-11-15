@@ -1,4 +1,4 @@
-﻿using BepInEx.Logging;
+using BepInEx.Logging;
 using Mono.Cecil;
 using System;
 using System.IO;
@@ -10,7 +10,6 @@ namespace MelonLoader.InternalUtils;
 
 internal static class ObfuscationCheck
 {
-	// This was accurate as of MelonLoader 0.4.3
 	public static void Initialize()
 	{
 		HarmonyLib.Harmony.CreateAndPatchAll(typeof(ObfuscationCheck));

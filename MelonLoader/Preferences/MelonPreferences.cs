@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using MelonLoader.Preferences;
@@ -12,20 +12,8 @@ namespace MelonLoader
         public static readonly List<MelonPreferences_ReflectiveCategory> ReflectiveCategories = new List<MelonPreferences_ReflectiveCategory>();
         public static readonly TomlMapper Mapper = new TomlMapper();
 
-        /// <summary>
-        /// Occurs when a Preferences File has been loaded.
-        /// <para>
-        /// <see cref="string"/>: Path of the Preferences File.
-        /// </para>
-        /// </summary>
         public static readonly MelonEvent<string> OnPreferencesLoaded = new MelonEvent<string>();
 
-        /// <summary>
-        /// Occurs when a Preferences File has been saved.
-        /// <para>
-        /// <see cref="string"/>: Path of the Preferences File.
-        /// </para>
-        /// </summary>
         public static readonly MelonEvent<string> OnPreferencesSaved = new MelonEvent<string>();
 
         internal static List<Preferences.IO.File> PrefFiles = new List<Preferences.IO.File>();

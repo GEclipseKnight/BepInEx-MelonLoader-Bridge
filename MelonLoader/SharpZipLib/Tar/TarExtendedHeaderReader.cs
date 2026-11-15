@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Tar
 {
-	/// <summary>
-	/// Reads the extended header of a Tar stream
-	/// </summary>
 	public class TarExtendedHeaderReader
 	{
 		private const byte LENGTH = 0;
@@ -28,19 +25,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Tar
 
 		private static readonly byte[] StateNext = new[] { (byte)' ', (byte)'=', (byte)'\n' };
 
-		/// <summary>
-		/// Creates a new <see cref="TarExtendedHeaderReader"/>.
-		/// </summary>
 		public TarExtendedHeaderReader()
 		{
 			ResetBuffers();
 		}
 
-		/// <summary>
-		/// Read <paramref name="length"/> bytes from <paramref name="buffer"/>
-		/// </summary>
-		/// <param name="buffer"></param>
-		/// <param name="length"></param>
 		public void Read(byte[] buffer, int length)
 		{
 			for (int i = 0; i < length; i++)
@@ -84,14 +73,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Tar
 			bbIndex = 0;
 		}
 
-		/// <summary>
-		/// Returns the parsed headers as key-value strings
-		/// </summary>
 		public Dictionary<string, string> Headers
 		{
 			get
 			{
-				// TODO: Check for invalid state? -NM 2018-07-01
 				return headers;
 			}
 		}

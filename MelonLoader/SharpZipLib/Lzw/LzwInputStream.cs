@@ -1,70 +1,17 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 {
-	/// <summary>
-	/// This filter stream is used to decompress a LZW format stream.
-	/// Specifically, a stream that uses the LZC compression method.
-	/// This file format is usually associated with the .Z file extension.
-	///
-	/// See http://en.wikipedia.org/wiki/Compress
-	/// See http://wiki.wxwidgets.org/Development:_Z_File_Format
-	///
-	/// The file header consists of 3 (or optionally 4) bytes. The first two bytes
-	/// contain the magic marker "0x1f 0x9d", followed by a byte of flags.
-	///
-	/// Based on Java code by Ronald Tschalar, which in turn was based on the unlzw.c
-	/// code in the gzip package.
-	/// </summary>
-	/// <example> This sample shows how to unzip a compressed file
-	/// <code>
-	/// using System;
-	/// using System.IO;
-	///
-	/// using MelonLoader.ICSharpCode.SharpZipLib.Core;
-	/// using MelonLoader.ICSharpCode.SharpZipLib.LZW;
-	///
-	/// class MainClass
-	/// {
-	/// 	public static void Main(string[] args)
-	/// 	{
-	///			using (Stream inStream = new LzwInputStream(File.OpenRead(args[0])))
-	///			using (FileStream outStream = File.Create(Path.GetFileNameWithoutExtension(args[0]))) {
-	///				byte[] buffer = new byte[4096];
-	///				StreamUtils.Copy(inStream, outStream, buffer);
-	///                         // OR
-	///                         inStream.Read(buffer, 0, buffer.Length);
-	///                         // now do something with the buffer
-	/// 		}
-	/// 	}
-	/// }
-	/// </code>
-	/// </example>
 	public class LzwInputStream : Stream
 	{
-		/// <summary>
-		/// Gets or sets a flag indicating ownership of underlying stream.
-		/// When the flag is true <see cref="Stream.Dispose()" /> will close the underlying stream also.
-		/// </summary>
-		/// <remarks>The default value is true.</remarks>
 		public bool IsStreamOwner { get; set; } = true;
 
-		/// <summary>
-		/// Creates a LzwInputStream
-		/// </summary>
-		/// <param name="baseInputStream">
-		/// The stream to read compressed data from (baseInputStream LZW format)
-		/// </param>
 		public LzwInputStream(Stream baseInputStream)
 		{
 			this.baseInputStream = baseInputStream;
 		}
 
-		/// <summary>
-		/// See <see cref="System.IO.Stream.ReadByte"/>
-		/// </summary>
-		/// <returns></returns>
 		public override int ReadByte()
 		{
 			int b = Read(one, 0, 1);
@@ -73,19 +20,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			return -1;
 		}
 
-		/// <summary>
-		/// Reads decompressed data into the provided buffer byte array
-		/// </summary>
-		/// <param name ="buffer">
-		/// The array to read and decompress data into
-		/// </param>
-		/// <param name ="offset">
-		/// The offset indicating where the data should be placed
-		/// </param>
-		/// <param name ="count">
-		/// The number of bytes to decompress
-		/// </param>
-		/// <returns>The number of bytes read. Zero signals the end of stream</returns>
 		public override int Read(byte[] buffer, int offset, int count)
 		{
 			if (!headerParsed)
@@ -113,7 +47,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			byte[] lData = data;
 			int lBitPos = bitPos;
 
-			// empty stack if stuff still left
 			int sSize = lStack.Length - lStackP;
 			if (sSize > 0)
 			{
@@ -130,7 +63,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 				return offset - start;
 			}
 
-		// loop, filling local buffer until enough data has been decompressed
 		MainLoop:
 			do
 			{
@@ -146,7 +78,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 				{
 					#region A
 
-					// handle 1-byte reads correctly
 					if (count == 0)
 					{
 						nBits = lNBits;
@@ -162,7 +93,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 						return offset - start;
 					}
 
-					// check for code-width expansion
 					if (lFreeEnt > lMaxCode)
 					{
 						int nBytes = lNBits << 3;
@@ -182,7 +112,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 					#region B
 
-					// read next code
 					int pos = lBitPos >> 3;
 					int code = (((lData[pos] & 0xFF) |
 						((lData[pos + 1] & 0xFF) << 8) |
@@ -191,7 +120,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 					lBitPos += lNBits;
 
-					// handle first iteration
 					if (lOldCode == -1)
 					{
 						if (code >= 256)
@@ -203,7 +131,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 						continue;
 					}
 
-					// handle CLEAR code
 					if (code == TBL_CLEAR && blockMode)
 					{
 						Array.Copy(zeros, 0, lTabPrefix, 0, zeros.Length);
@@ -215,7 +142,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 						lMaxCode = (1 << lNBits) - 1;
 						lBitMask = lMaxCode;
 
-						// Code tables reset
 
 						lBitPos = ResetBuf(lBitPos);
 						goto MainLoop;
@@ -225,11 +151,9 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 					#region C
 
-					// setup
 					int inCode = code;
 					lStackP = lStack.Length;
 
-					// Handle KwK case
 					if (code >= lFreeEnt)
 					{
 						if (code > lFreeEnt)
@@ -242,7 +166,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 						code = lOldCode;
 					}
 
-					// Generate output characters in reverse order
 					while (code >= 256)
 					{
 						lStack[--lStackP] = lTabSuffix[code];
@@ -253,7 +176,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 					buffer[offset++] = lFinChar;
 					count--;
 
-					// And put them out in forward order
 					sSize = lStack.Length - lStackP;
 					int num = (sSize >= count) ? count : sSize;
 					Array.Copy(lStack, lStackP, buffer, offset, num);
@@ -265,7 +187,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 					#region D
 
-					// generate new entry in table
 					if (lFreeEnt < lMaxMaxCode)
 					{
 						lTabPrefix[lFreeEnt] = lOldCode;
@@ -273,10 +194,8 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 						lFreeEnt++;
 					}
 
-					// Remember previous code
 					lOldCode = inCode;
 
-					// if output buffer full, then return
 					if (count == 0)
 					{
 						nBits = lNBits;
@@ -310,12 +229,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			return offset - start;
 		}
 
-		/// <summary>
-		/// Moves the unread data in the buffer to the beginning and resets
-		/// the pointers.
-		/// </summary>
-		/// <param name="bitPosition"></param>
-		/// <returns></returns>
 		private int ResetBuf(int bitPosition)
 		{
 			int pos = bitPosition >> 3;
@@ -341,7 +254,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 			int result = baseInputStream.Read(hdr, 0, hdr.Length);
 
-			// Check the magic marker
 			if (result < 0)
 				throw new LzwException("Failed to read LZW header");
 
@@ -352,7 +264,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 					hdr[0], hdr[1]));
 			}
 
-			// Check the 3rd header byte
 			blockMode = (hdr[2] & LzwConstants.BLOCK_MODE_MASK) > 0;
 			maxBits = hdr[2] & LzwConstants.BIT_MASK;
 
@@ -368,7 +279,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 				throw new LzwException("Unsupported bits set in the header.");
 			}
 
-			// Initialize variables
 			maxMaxCode = 1 << maxBits;
 			nBits = LzwConstants.INIT_BITS;
 			maxCode = (1 << nBits) - 1;
@@ -388,9 +298,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 		#region Stream Overrides
 
-		/// <summary>
-		/// Gets a value indicating whether the current stream supports reading
-		/// </summary>
 		public override bool CanRead
 		{
 			get
@@ -399,9 +306,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			}
 		}
 
-		/// <summary>
-		/// Gets a value of false indicating seeking is not supported for this stream.
-		/// </summary>
 		public override bool CanSeek
 		{
 			get
@@ -410,9 +314,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			}
 		}
 
-		/// <summary>
-		/// Gets a value of false indicating that this stream is not writeable.
-		/// </summary>
 		public override bool CanWrite
 		{
 			get
@@ -421,9 +322,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			}
 		}
 
-		/// <summary>
-		/// A value representing the length of the stream in bytes.
-		/// </summary>
 		public override long Length
 		{
 			get
@@ -432,11 +330,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			}
 		}
 
-		/// <summary>
-		/// The current position within the stream.
-		/// Throws a NotSupportedException when attempting to set the position
-		/// </summary>
-		/// <exception cref="NotSupportedException">Attempting to set the position</exception>
 		public override long Position
 		{
 			get
@@ -449,66 +342,31 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 			}
 		}
 
-		/// <summary>
-		/// Flushes the baseInputStream
-		/// </summary>
 		public override void Flush()
 		{
 			baseInputStream.Flush();
 		}
 
-		/// <summary>
-		/// Sets the position within the current stream
-		/// Always throws a NotSupportedException
-		/// </summary>
-		/// <param name="offset">The relative offset to seek to.</param>
-		/// <param name="origin">The <see cref="SeekOrigin"/> defining where to seek from.</param>
-		/// <returns>The new position in the stream.</returns>
-		/// <exception cref="NotSupportedException">Any access</exception>
 		public override long Seek(long offset, SeekOrigin origin)
 		{
 			throw new NotSupportedException("Seek not supported");
 		}
 
-		/// <summary>
-		/// Set the length of the current stream
-		/// Always throws a NotSupportedException
-		/// </summary>
-		/// <param name="value">The new length value for the stream.</param>
-		/// <exception cref="NotSupportedException">Any access</exception>
 		public override void SetLength(long value)
 		{
 			throw new NotSupportedException("InflaterInputStream SetLength not supported");
 		}
 
-		/// <summary>
-		/// Writes a sequence of bytes to stream and advances the current position
-		/// This method always throws a NotSupportedException
-		/// </summary>
-		/// <param name="buffer">The buffer containing data to write.</param>
-		/// <param name="offset">The offset of the first byte to write.</param>
-		/// <param name="count">The number of bytes to write.</param>
-		/// <exception cref="NotSupportedException">Any access</exception>
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			throw new NotSupportedException("InflaterInputStream Write not supported");
 		}
 
-		/// <summary>
-		/// Writes one byte to the current stream and advances the current position
-		/// Always throws a NotSupportedException
-		/// </summary>
-		/// <param name="value">The byte to write.</param>
-		/// <exception cref="NotSupportedException">Any access</exception>
 		public override void WriteByte(byte value)
 		{
 			throw new NotSupportedException("InflaterInputStream WriteByte not supported");
 		}
 
-		/// <summary>
-		/// Closes the input stream.  When <see cref="IsStreamOwner"></see>
-		/// is true the underlying stream is also closed.
-		/// </summary>
 		protected override void Dispose(bool disposing)
 		{
 			if (!isClosed)
@@ -527,15 +385,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 
 		private Stream baseInputStream;
 
-		/// <summary>
-		/// Flag indicating wether this instance has been closed or not.
-		/// </summary>
 		private bool isClosed;
 
 		private readonly byte[] one = new byte[1];
 		private bool headerParsed;
 
-		// string table stuff
 		private const int TBL_CLEAR = 0x100;
 
 		private const int TBL_FIRST = TBL_CLEAR + 1;
@@ -545,7 +399,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 		private readonly int[] zeros = new int[256];
 		private byte[] stack;
 
-		// various state
 		private bool blockMode;
 
 		private int nBits;
@@ -558,7 +411,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Lzw
 		private int stackP;
 		private int freeEnt;
 
-		// input buffer
 		private readonly byte[] data = new byte[1024 * 8];
 
 		private int bitPos;

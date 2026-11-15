@@ -1,20 +1,9 @@
 namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 {
-	/// <summary>
-	/// This class is general purpose class for writing data to a buffer.
-	///
-	/// It allows you to write bits as well as bytes
-	/// Based on DeflaterPending.java
-	///
-	/// author of the original java version : Jochen Hoenicke
-	/// </summary>
 	public class PendingBuffer
 	{
 		#region Instance Fields
 
-		/// <summary>
-		/// Internal work buffer
-		/// </summary>
 		private readonly byte[] buffer;
 
 		private int start;
@@ -27,19 +16,10 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#region Constructors
 
-		/// <summary>
-		/// construct instance using default buffer size of 4096
-		/// </summary>
 		public PendingBuffer() : this(4096)
 		{
 		}
 
-		/// <summary>
-		/// construct instance using specified buffer size
-		/// </summary>
-		/// <param name="bufferSize">
-		/// size to use for internal buffer
-		/// </param>
 		public PendingBuffer(int bufferSize)
 		{
 			buffer = new byte[bufferSize];
@@ -47,20 +27,11 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 
 		#endregion Constructors
 
-		/// <summary>
-		/// Clear internal state/buffers
-		/// </summary>
 		public void Reset()
 		{
 			start = end = bitCount = 0;
 		}
 
-		/// <summary>
-		/// Write a byte to buffer
-		/// </summary>
-		/// <param name="value">
-		/// The value to write
-		/// </param>
 		public void WriteByte(int value)
 		{
 #if DebugDeflation
@@ -72,12 +43,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			buffer[end++] = unchecked((byte)value);
 		}
 
-		/// <summary>
-		/// Write a short value to buffer LSB first
-		/// </summary>
-		/// <param name="value">
-		/// The value to write.
-		/// </param>
 		public void WriteShort(int value)
 		{
 #if DebugDeflation
@@ -90,10 +55,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			buffer[end++] = unchecked((byte)(value >> 8));
 		}
 
-		/// <summary>
-		/// write an integer LSB first
-		/// </summary>
-		/// <param name="value">The value to write.</param>
 		public void WriteInt(int value)
 		{
 #if DebugDeflation
@@ -108,12 +69,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			buffer[end++] = unchecked((byte)(value >> 24));
 		}
 
-		/// <summary>
-		/// Write a block of data to buffer
-		/// </summary>
-		/// <param name="block">data to write</param>
-		/// <param name="offset">offset of first byte to write</param>
-		/// <param name="length">number of bytes to write</param>
 		public void WriteBlock(byte[] block, int offset, int length)
 		{
 #if DebugDeflation
@@ -126,9 +81,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			end += length;
 		}
 
-		/// <summary>
-		/// The number of bits written to the buffer
-		/// </summary>
 		public int BitCount
 		{
 			get
@@ -137,9 +89,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Align internal buffer on a byte boundary
-		/// </summary>
 		public void AlignToByte()
 		{
 #if DebugDeflation
@@ -160,11 +109,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			bitCount = 0;
 		}
 
-		/// <summary>
-		/// Write bits to internal buffer
-		/// </summary>
-		/// <param name="b">source of bits</param>
-		/// <param name="count">number of bits to write</param>
 		public void WriteBits(int b, int count)
 		{
 #if DebugDeflation
@@ -173,9 +117,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 				throw new SharpZipBaseException("Debug check: start != 0");
 			}
 
-			//			if (DeflaterConstants.DEBUGGING) {
-			//				//Console.WriteLine("writeBits("+b+","+count+")");
-			//			}
 #endif
 			bits |= (uint)(b << bitCount);
 			bitCount += count;
@@ -188,10 +129,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Write a short value to internal buffer most significant byte first
-		/// </summary>
-		/// <param name="s">value to write</param>
 		public void WriteShortMSB(int s)
 		{
 #if DebugDeflation
@@ -204,9 +141,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			buffer[end++] = unchecked((byte)s);
 		}
 
-		/// <summary>
-		/// Indicates if buffer has been flushed
-		/// </summary>
 		public bool IsFlushed
 		{
 			get
@@ -215,14 +149,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			}
 		}
 
-		/// <summary>
-		/// Flushes the pending buffer into the given output array.  If the
-		/// output array is to small, only a partial flush is done.
-		/// </summary>
-		/// <param name="output">The output array.</param>
-		/// <param name="offset">The offset into output array.</param>
-		/// <param name="length">The maximum number of bytes to store.</param>
-		/// <returns>The number of bytes flushed.</returns>
 		public int Flush(byte[] output, int offset, int length)
 		{
 			if (bitCount >= 8)
@@ -247,13 +173,6 @@ namespace MelonLoader.ICSharpCode.SharpZipLib.Zip.Compression
 			return length;
 		}
 
-		/// <summary>
-		/// Convert internal buffer to byte array.
-		/// Buffer is empty on completion
-		/// </summary>
-		/// <returns>
-		/// The internal buffer contents converted to a byte array.
-		/// </returns>
 		public byte[] ToByteArray()
 		{
 			AlignToByte();

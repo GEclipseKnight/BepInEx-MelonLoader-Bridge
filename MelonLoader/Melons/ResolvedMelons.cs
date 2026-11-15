@@ -1,4 +1,4 @@
-﻿namespace MelonLoader
+namespace MelonLoader
 {
     public sealed class ResolvedMelons // This class only exists because I can't use Tuples
     {
